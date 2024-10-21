@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Loading } from './Loading';
 import { primaryColor } from '../../constants';
 // import '../../styles/button.css';
-// import './example.css';
+import './example.css';
 
 export const Button = (props) => {
   const [width, setWidth] = useState(null);
