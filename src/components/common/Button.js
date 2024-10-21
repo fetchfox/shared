@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Loading } from './Loading';
 import { primaryColor } from '../../constants';
+// import '../../styles/button.css';
+// import './example.css';
 
 export const Button = (props) => {
   const [width, setWidth] = useState(null);
@@ -23,7 +25,9 @@ export const Button = (props) => {
     <button
       ref={buttonRef}
       style={extraStyles}
-      {...props}>
+      {...props}
+      className="bt"
+      >
 
       {!props.loading && props.children}
       {props.loading && (
