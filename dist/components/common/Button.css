@@ -1,0 +1,113 @@
+:root {
+  --main-color: #df6546;
+  --main-color-ee: #df6546ee;
+  --main-color-66: #df654666;
+  --main-color-33: #df654633;
+
+  --ants-light: #A3C8FF;
+  --ants-dark: #3B7DF6;
+}
+
+.Button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5;
+  cursor: pointer;
+  user-select: none;
+  border: 0;
+  text-decoration: none;
+  background-color: var(--main-color-ee);
+  color: white;
+  font-weight: bold;
+  text-align: center;
+
+  font-size: 14px;
+  height: 32px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  box-shadow: 3px 3px var(--main-color-66);
+}
+
+.Button:hover {
+  opacity: 0.8;
+}
+
+.Button:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px var(--main-color-66);
+}
+
+.Button[disabled] {
+  opacity: 0.5;
+}
+
+.Button[disabled]:hover {
+  transform: unset;
+  box-shadow: 3px 3px var(--main-color-66);
+}
+
+.Button-outline {
+  background-color: white;
+  color: var(--main-color);
+  border: 1px solid var(--main-color);
+}
+
+.Button-gray {
+  background-color: white;
+  color: #888;
+  border: 1px solid #888;
+  box-shadow: 3px 3px #ccc;
+}
+
+.Button-small {
+  font-size: 12px;
+  height: 24px;
+  padding: 4px 8px;
+  box-shadow: 2px 2px var(--main-color-66);
+}
+.Button.Button-small:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px var(--main-color-66);
+}
+
+.Button-small.Button-gray {
+  box-shadow: 2px 2px #ccc;
+}
+.Button.Button-small:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px #ccc;
+}
+
+.Button-white {
+  background-color: white;
+  color: var(--main-color);
+  border: 0;
+  box-shadow: 0px 0px;
+}
+
+.Button-white:active,
+.Button-small.Button-white:active {
+  transform: translate(0, 0);
+  opacity: 0.5;
+}
+
+.Button-trans {
+  background-color: transparent;
+  color: var(--main-color);
+  border: 0;
+  box-shadow: 0px 0px;
+}
+
+.Button-trans:active,
+.Button-small.Button-trans:active {
+  transform: translate(0, 0);
+  opacity: 0.5;
+}
+
+.Button-large {
+  font-size: 18px;
+  height: 42px;
+  padding: 10px 24px;
+  box-shadow: 3px 3px var(--main-color-66);
+}

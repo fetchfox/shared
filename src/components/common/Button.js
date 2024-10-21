@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Loading } from './Loading';
 import { primaryColor } from '../../constants';
-// import '../../styles/button.css';
-import './example.css';
+import './Button.css';
 
 export const Button = (props) => {
   const [width, setWidth] = useState(null);
@@ -21,20 +20,40 @@ export const Button = (props) => {
     extraStyles.cursor = 'default';
   }
 
+  const className = 'Button';
+  if (props.small) {
+    className += ' Button-small';
+  }
+  if (props.large) {
+    className += ' Button-large';
+  }
+  if (props.gray) {
+    className += ' Button-gray';
+  }
+  if (props.white) {
+    className += ' Button-white';
+  }
+  if (props.outline) {
+    className += ' Button-outline';
+  }
+  if (props.trans) {
+    className += ' Button-trans';
+  }
+
   return (
     <button
       ref={buttonRef}
       style={extraStyles}
       {...props}
-      className="bt"
+      className={className}
       >
 
       {!props.loading && props.children}
       {props.loading && (
         <div style={{ marginTop: 1 }}>
         <Loading
-        size={(props?.className || '').indexOf('bt-sm') == -1 ? 18 : 14}
-        color={(props?.className || '').indexOf('outline') == -1 ? 'white' : primaryColor}
+        size={props?.small ? 18 : 14}
+        color="white"
         />
         </div>)
        }
