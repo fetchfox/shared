@@ -2,8 +2,9 @@
   "name": "ui7",
   "version": "1.0.0",
   "description": "",
-  "main": "src/index.js",
+  "main": "build/index.js",
   "scripts": {
+    "build": "babel src -d build --source-maps",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -11,5 +12,12 @@
   "license": "ISC",
   "dependencies": {
     "react": "^18.3.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.25.7",
+    "@babel/core": "^7.25.8",
+    "@babel/preset-env": "^7.25.8",
+    "@babel/preset-react": "^7.25.7",
+    "babel-plugin-source-map-support": "^2.2.0"
   }
 }
