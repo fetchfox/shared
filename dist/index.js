@@ -3,15 +3,11 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var _index = require("./components/index.js");
-Object.keys(_index).forEach(function (key) {
-  if (key === "default" || key === "__esModule") return;
-  if (key in exports && exports[key] === _index[key]) return;
-  Object.defineProperty(exports, key, {
-    enumerable: true,
-    get: function get() {
-      return _index[key];
-    }
-  });
+Object.defineProperty(exports, "WorkflowPrompt", {
+  enumerable: true,
+  get: function get() {
+    return _WorkflowPrompt.WorkflowPrompt;
+  }
 });
+var _WorkflowPrompt = require("./components/input/WorkflowPrompt.js");
 //# sourceMappingURL=index.js.map

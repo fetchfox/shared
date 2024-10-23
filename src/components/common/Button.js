@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Loading } from './Loading';
-import { primaryColor } from '../../constants';
+import { Loading } from './Loading.js';
+import { primaryColor } from '../../constants.js';
 import './Button.css';
 
 export const Button = (props) => {
@@ -52,7 +52,7 @@ export const Button = (props) => {
       {props.loading && (
         <div style={{ marginTop: 1 }}>
         <Loading
-        size={props?.small ? 18 : 14}
+        size={props.small ? 18 : 14}
         color="white"
         />
         </div>)

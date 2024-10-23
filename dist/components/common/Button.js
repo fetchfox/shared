@@ -6,8 +6,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Button = void 0;
 var _react = _interopRequireWildcard(require("react"));
-var _Loading = require("./Loading");
-var _constants = require("../../constants");
+var _Loading = require("./Loading.js");
+var _constants = require("../../constants.js");
 require("./Button.css");
 function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(e) { return e ? t : r; })(e); }
 function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != _typeof(e) && "function" != typeof e) return { "default": e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n["default"] = e, t && t.set(e, n), n; }
@@ -65,7 +65,7 @@ var Button = exports.Button = function Button(props) {
       marginTop: 1
     }
   }, /*#__PURE__*/_react["default"].createElement(_Loading.Loading, {
-    size: props !== null && props !== void 0 && props.small ? 18 : 14,
+    size: props.small ? 18 : 14,
     color: "white"
   })));
 };
