@@ -29,6 +29,15 @@
   box-shadow: 3px 3px var(--main-color-66);
 }
 
+.Button.Button-simple {
+  box-shadow: unset;
+  background: transparent;
+  border: unset;
+  border-radius: unset;
+  padding: 0;
+  height: unset;
+}
+
 .Button[disabled] {
   cursor: default;
 }
@@ -96,11 +105,16 @@
   opacity: 0.5;
 }
 
-.Button-trans {
+.Button-trans,
+.Button-gray.Button-trans {
   background-color: transparent;
   color: var(--main-color);
   border: 0;
   box-shadow: 0px 0px;
+}
+
+.Button-gray.Button-trans {
+  color: #888;
 }
 
 .Button-trans:active,

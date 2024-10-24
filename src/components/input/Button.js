@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Loading } from '@/src/components/common/Loading.js';
 import { primaryColor } from '@/src/constants.js';
+import { Tooltip } from 'react-tooltip';
 import './Button.css';
 
 export const Button = (props) => {
@@ -20,7 +21,10 @@ export const Button = (props) => {
     extraStyles.cursor = 'default';
   }
 
-  const className = 'Button';
+  let className = props.className === undefined ? 'Button' : props.className;
+  if (props.simple) {
+    className += ' Button-simple';
+  }
   if (props.small) {
     className += ' Button-small';
   }
@@ -49,8 +53,11 @@ export const Button = (props) => {
       style={extraStyles}
       {...props}
       className={className}
+      data-tooltip-id="tooltip"
+      data-tooltip-content={props.tooltip}
       >
 
+      {props.tooltip && <Tooltip id="tooltip" place="bottom" />}
       {!props.loading && props.children}
       {props.loading && (
         <div style={{ marginTop: 1 }}>

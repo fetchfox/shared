@@ -1,6 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaArrowAltCircleDown, FaCheckCircle } from 'react-icons/fa';
+import {
+  FaArrowAltCircleDown,
+  FaCheckCircle,
+  FaEdit,
+  FaTimesCircle,
+} from 'react-icons/fa';
 import { IoArrowUndo } from "react-icons/io5";
+import {
+  MdCancel,
+  MdEditSquare,
+  MdAddCircle,
+  MdAddBox,
+} from 'react-icons/md';
 import { useGlobalContext }  from '@/src/contexts/index.js';
 import { Button } from '@/src/components/input/Button.js';
 import { Input } from '@/src/components/input/Input.js';
@@ -87,7 +98,7 @@ const StepHeader = ({
                 }}
       >
       <div>{prettyName}</div>
-      <div style={{ display: 'flex', gap: 5 }}>
+      <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
         {onDone && <Button
           className="bt bt-trans bt-sm"
           onClick={onDone}
@@ -95,23 +106,25 @@ const StepHeader = ({
           Cancel
         </Button>}
         {onRemove && <Button
-          className="bt bt-trans bt-sm"
+          simple gray
           onClick={onRemove}
+          tooltip="Remove"
           >
-          Remove
+           <MdCancel size={18} />
         </Button>}
         {onSave && <Button
-          className="bt bt-sm"
+          small
           onClick={onSave}
           loading={loading}
           >
           Save
         </Button>}
         {onEdit && <Button
-          className="bt bt-trans bt-sm"
+          simple gray
           onClick={onEdit}
+          tooltip="Edit"
           >
-          Edit
+         <MdEditSquare size={18} />
         </Button>}
       </div>
     </div>
@@ -475,19 +488,25 @@ export const Step = ({
                       height: 46,
                       display: 'flex',
                       alignItems: 'center',
+                      marginRight: 0,
+                      padding: '0 10px',
+                      width: '100%',
+                      justifyContent: last ? 'center' : 'flex-end',
                     }}>
-          {onUndo && <button
-            className="bt bt-white bt-sm"
+          {onUndo && <Button
+           className="bt bt-white bt-sm"
+             small trans
             onClick={onUndo}
             >
             <IoArrowUndo style={{ marginTop: -2 }} size={14} /> Undo
-          </button>}
-          {<button
-            className="bt bt-white bt-sm"
+          </Button>}
+          {<Button
+            simple gray
             onClick={onAddStep}
+            tooltip="Add Step"
             >
-            Add Step
-          </button>}
+           <MdAddBox size={24} />
+          </Button>}
         </div>
       {!last && (
         <div style={{ padding: 10,
