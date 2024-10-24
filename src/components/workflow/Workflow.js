@@ -12,27 +12,109 @@ import {
   MdAddCircle,
   MdAddBox,
 } from 'react-icons/md';
+
+import { useSpring, animated, easings } from '@react-spring/web';
+
 import { useGlobalContext }  from '@/src/contexts/index.js';
+
 import { TableFromItems } from '@/src/components/table/TableFromItems';
 import { Button } from '@/src/components/input/Button.js';
 import { Input } from '@/src/components/input/Input.js';
+import { Textarea } from '@/src/components/input/Textarea.js';
 import { Error } from '@/src/components/error/Error.js';
+
 import { primaryColor } from '@/src/constants.js';
 import { endpoint } from '@/src/utils.js';
 
-const ConstStep = ({ step, prettyName }) => {
+const ConstStep = ({ step, onEdit, prettyName }) => {
   const nodes = step.args.items.map(item => (
     <div key={item.url}>{item.url}</div>
   ))
   return (
     <div>
-      <StepHeader prettyName="Starting URL" />
+      <StepHeader
+        onEdit={onEdit}
+        prettyName="Starting URL" />
       {nodes}
     </div>
   );
 }
 
+const ConstStepEdit = (props) => {
+  return (
+    <GenericStepEdit
+      {...props}
+      innerComponent={ConstStepEditInner} />
+  );
+}
+const ConstStepEditInner = ({
+  key,
+  step,
+  workflow,
+  desc,
+  loading,
+  errors,
+  index,
+  workflowId,
+  prettyName,
+  onChange,
+  onDone,
+  onSave,
+}) => {
+  const [urls, setUrls] = useState();
+
+  useEffect(() => {
+    if (!step?.args?.items) return;
+    if (urls) return;
+    setUrls(step.args.items.map(i => i.url).join('\n'));
+  }, [step?.args?.items]);
+
+  useEffect(() => {
+    if (!step?.args) return;
+    const items = [];
+    for (const url of urls.split('\n')) {
+      if (!url.trim()) continue;
+      items.push({ url });
+    };
+    onChange('items', items);
+  }, [urls]);
+
+  return (
+    <div>
+      <StepHeader
+        prettyName={prettyName}
+        loading={loading}
+        onDone={onDone}
+        onSave={onSave}
+      />
+      <Textarea
+        label="Enter one URL per line"
+        placeholder="https://www.example.com/page"
+        style={{ width: '100%', minHeight: 80 }}
+        value={urls}
+        onChange={(e) => setUrls(e.target.value)}
+      />
+      <Error small message={errors && errors.items} />
+    </div>
+  );
+}
+
 const NewStep = ({ onChange, onCancel }) => {
+  const springs = useSpring({
+    from: {
+      opacity: 0.5,
+      transform: 'scaleY(0)',
+    },
+    to: {
+      opacity: 1,
+      transform: 'scaleY(1)',
+    },
+    config: {
+      duration: 250,
+      easing: easings.easeOutBack,
+    },
+  });
+
   const { library } = useGlobalContext();
 
   const nodes = Object.keys(library)
@@ -67,18 +149,18 @@ const NewStep = ({ onChange, onCancel }) => {
     ));
 
   return (
-    <div>
+    <animated.div style={{ transformOrigin: 'top center', ...springs }}>
       <div style={{ display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
                   }}>
         <p>What type of step should we add?</p>
-        <button
-          className="bt bt-outline bt-sm"
+        <Button
+          small outline
           onClick={onCancel}
           >
           Cancel
-        </button>
+        </Button>
       </div>
       <div style={{ display: 'grid',
                     gridTemplateColumns: 'repeat(2, 1fr)',
@@ -90,7 +172,7 @@ const NewStep = ({ onChange, onCancel }) => {
       {/*
       <pre>{JSON.stringify(library, null, 2)}</pre>
       */}
-    </div>
+    </animated.div>
   );
 }
 
@@ -113,7 +195,7 @@ const StepHeader = ({
       <div>{prettyName}</div>
       <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
         {onDone && <Button
-          className="bt bt-trans bt-sm"
+          trans small
           onClick={onDone}
           >
           Cancel
@@ -342,7 +424,7 @@ const GenericStepEditInner = ({
         <th style={{ width: '100px', whiteSpace: 'nowrap' }}>
           {key.upperFirst()}
         </th>
-        <td style={{ width: '100%' }}>
+        <td style={{ width: '100%', border: 0 }}>
           {inputNode}
           <Error small message={errors && errors[key]} />
         </td>
@@ -359,7 +441,7 @@ const GenericStepEditInner = ({
         onSave={onSave}
       />
       <div>
-        <table className="dense">
+        <table>
           <tbody>{rows}</tbody>
         </table>
       </div>
@@ -378,7 +460,6 @@ export const Step = ({
   last,
   workflow,
   workflowId,
-  extraClasses,
   onSubmit,
   onAddStep,
   onSetStepWithName,
@@ -418,21 +499,32 @@ export const Step = ({
     editNode = (
       <NewStep
         onChange={(name) => onSetStepWithName(name, index)}
-        onCancel={onRemove}
+        onCancel={() => { onRemove() }}
       />
     );
   } else {
     //const fallbackPrettyName = `Step ${index + 1}: ${step.name.replace(/-/g, ' ').upperFirst()}`;
     const fallbackPrettyName = `${step.name.replace(/-/g, ' ').upperFirst()}`;
 
+    const childProps = {
+      index,
+      step,
+      onSubmit,
+      onRemove: () => { setEditing(false); onRemove() },
+      workflowId,
+      onDone: () => setEditing(false),
+      onEdit: () => setEditing(true),
+    };
     let pair = {
       'const': [
         <ConstStep
-          index={index}
-          step={step}
+          {...childProps}
           prettyName={`Initialize`}
         />,
-        null,
+        <ConstStepEdit
+          {...childProps}
+          prettyName={`Initialize`}
+        />,
       ],
     //   'exportUrls': [
     //     <ExportUrlsStep
@@ -458,20 +550,12 @@ export const Step = ({
     if (!pair) {
       pair = [
         <GenericStep
-          index={index}
-          step={step}
+          {...childProps}
           prettyName={fallbackPrettyName}
-          onEdit={() => setEditing(true)}
-          onRemove={onRemove}
         />,
         <GenericStepEdit
-          step={step}
-          index={index}
-          workflowId={workflowId}
+          {...childProps}
           prettyName={fallbackPrettyName}
-          onSubmit={onSubmit}
-          onDone={() => setEditing(false)}
-          onRemove={onRemove}
         />,
       ];
     }
@@ -481,7 +565,7 @@ export const Step = ({
   }
 
   return (
-    <div className={extraClasses}>
+    <div>
       <div style={{ border: '1px solid #ccc',
                     background: '#fff',
                     boxShadow: `2px 2px #ddd`,
@@ -523,7 +607,7 @@ export const Step = ({
         <div style={{ padding: 10,
                       width: '100%',
                       textAlign: 'center',
-                      color: primaryColor,
+                      color: '#555',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -571,12 +655,6 @@ export const Workflow = ({ workflow, onChange }) => {
   const addStep = async (step, index) => {
     const copy = JSON.parse(JSON.stringify(workflow));
     copy.steps.splice(index, 0, step);
-
-    // const d = {};
-    // d[index] = 'add-animation';
-    // setExtraClasses(d);
-    // setTimeout(() => setExtraClasses(d), 1);
-    // setTimeout(() => setExtraClasses({}), 150);
 
     if (step.name != 'new' && workflow.id) {
       const data = await commit(copy);
@@ -677,7 +755,7 @@ export const Workflow = ({ workflow, onChange }) => {
       onSubmit: (val) => handleSubmit(index, val),
       onAddStep: () => addStep({ name: 'new', args: {} }, index + 1),
       onSetStepWithName: (name, index) => setStepWithName(name, index),
-      onRemove: () => removeStep(index),
+      onRemove: () => { removeStep(index) },
       onUndo: undoData?.index == index + 1 ? undo : null,
     };
 
