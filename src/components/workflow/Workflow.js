@@ -13,11 +13,21 @@ import {
   MdAddBox,
 } from 'react-icons/md';
 import { useGlobalContext }  from '@/src/contexts/index.js';
+import { TableFromItems } from '@/src/components/table/TableFromItems';
 import { Button } from '@/src/components/input/Button.js';
 import { Input } from '@/src/components/input/Input.js';
 import { Error } from '@/src/components/error/Error.js';
 import { primaryColor } from '@/src/constants.js';
 import { endpoint } from '@/src/utils.js';
+
+const ConstStep = ({ step, prettyName }) => {
+  return (
+    <div>
+      <StepHeader prettyName={prettyName} />
+      <TableFromItems items={step.args.items} />
+    </div>
+  );
+}
 
 const NewStep = ({ onChange, onCancel }) => {
   const { library } = useGlobalContext();
@@ -412,17 +422,15 @@ export const Step = ({
     //const fallbackPrettyName = `Step ${index + 1}: ${step.name.replace(/-/g, ' ').upperFirst()}`;
     const fallbackPrettyName = `${step.name.replace(/-/g, ' ').upperFirst()}`;
 
-    let pair = null;
-
-    // let pair = {
-    //   'const': [
-    //     <ConstStep
-    //       index={index}
-    //       step={step}
-    //       prettyName={`Initialize`}
-    //     />,
-    //     null,
-    //   ],
+    let pair = {
+      'const': [
+        <ConstStep
+          index={index}
+          step={step}
+          prettyName={`Initialize`}
+        />,
+        null,
+      ],
     //   'exportUrls': [
     //     <ExportUrlsStep
     //       index={index}
@@ -442,7 +450,7 @@ export const Step = ({
     //       onRemove={onRemove}
     //     />,
     //   ],
-    // }[step.name];
+    }[step.name];
 
     if (!pair) {
       pair = [

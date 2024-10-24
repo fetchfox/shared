@@ -1,0 +1,13 @@
+table {
+  border-collapse: collapse;
+  position: relative;
+  width: 100%;
+}
+
+table.dense th, td {
+  font-size: 12px;
+  border: 1px solid #ccc;
+  padding: 4px;
+  text-align: left;
+  table-layout: fixed;
+}
