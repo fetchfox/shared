@@ -1,8 +1,8 @@
 function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
 import React, { useState, useEffect, useRef } from 'react';
-import { Loading } from './Loading.js';
-import { primaryColor } from '../../constants.js';
-import './Button.css';
+import { Loading } from "../common/Loading.js";
+import { primaryColor } from "../../constants.js";
+import "./Button.css";
 export const Button = props => {
   const [width, setWidth] = useState(null);
   const buttonRef = useRef(null);
@@ -36,6 +36,10 @@ export const Button = props => {
   if (props.trans) {
     className += ' Button-trans';
   }
+  const buttonProps = {
+    ...props
+  };
+  delete buttonProps.loading;
   return /*#__PURE__*/React.createElement("button", _extends({
     ref: buttonRef,
     style: extraStyles

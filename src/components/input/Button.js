@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Loading } from './Loading.js';
-import { primaryColor } from '../../constants.js';
+import { Loading } from '@/src/components/common/Loading.js';
+import { primaryColor } from '@/src/constants.js';
 import './Button.css';
 
 export const Button = (props) => {
@@ -39,6 +39,9 @@ export const Button = (props) => {
   if (props.trans) {
     className += ' Button-trans';
   }
+
+  const buttonProps = {...props};
+  delete buttonProps.loading;
 
   return (
     <button

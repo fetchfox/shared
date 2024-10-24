@@ -1,0 +1,1 @@
+{"version":3,"file":"utils.js","names":["apiHost","endpoint","path"],"sources":["../src/utils.js"],"sourcesContent":["import { apiHost } from '@/src/constants.js';\n\nexport const endpoint = (path) => {\n  return `${apiHost}${path}`;\n}\n"],"mappings":"AAAA,SAASA,OAAO;AAEhB,OAAO,MAAMC,QAAQ,GAAIC,IAAI,IAAK;EAChC,OAAO,GAAGF,OAAO,GAAGE,IAAI,EAAE;AAC5B,CAAC","ignoreList":[]}

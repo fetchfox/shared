@@ -29,6 +29,10 @@
   box-shadow: 3px 3px var(--main-color-66);
 }
 
+.Button[disabled] {
+  cursor: default;
+}
+
 .Button:hover {
   opacity: 0.8;
 }

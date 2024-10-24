@@ -1,16 +1,117 @@
-"use strict";
+import React, { useState, useEffect } from 'react';
+import { Loading } from '../common/Loading';
+import { Input } from '../input/Input';
+import { Textarea } from '../input/Textarea';
+import { Button } from '../input/Button';
+import { FaArrowRight } from 'react-icons/fa';
+const UrlsInput = ({
+  value,
+  onChange
+}) => {
+  return /*#__PURE__*/React.createElement(Input, {
+    label: "Enter URL to scrape",
+    style: {
+      width: '100%'
+    },
+    value: value,
+    onChange: onChange,
+    placeholder: "Enter URL to scrape, eg. https://example.com/page"
+  });
+};
+export const WorkflowPrompt = ({
+  fox,
+  values,
+  onChange,
+  onWorkflow
+}) => {
+  const [loading, setLoading] = useState();
+  const [disabled, setDisabled] = useState();
+  const handleSubmit = async e => {
+    e.preventDefault();
+    if (loading) return;
+    if (disabled) return;
+    setLoading(true);
+    setDisabled(true);
 
-function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.WorkflowPrompt = void 0;
-var _react = _interopRequireWildcard(require("react"));
-function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(e) { return e ? t : r; })(e); }
-function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != _typeof(e) && "function" != typeof e) return { "default": e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n["default"] = e, t && t.set(e, n), n; }
-function _objectDestructuringEmpty(t) { if (null == t) throw new TypeError("Cannot destructure " + t); }
-var WorkflowPrompt = exports.WorkflowPrompt = function WorkflowPrompt(_ref) {
-  _objectDestructuringEmpty(_ref);
-  return /*#__PURE__*/_react["default"].createElement("div", null, "WorkflowPrompt2");
+    // stuff
+    console.log('preview via fox 2', fox);
+    const p = await fox.plan(`${values.urls} ${values.prompt}`);
+    console.log('p', p);
+    setLoading(false);
+    setDisabled(false);
+    onWorkflow(p);
+  };
+
+  // const handleKeyDown = (e) => {
+  //   if (e.key == 'Enter' && !e.shiftKey) {
+  //     e.preventDefault();
+  //     handleSubmit(e);
+  //   } else {
+  //     console.log('handleKeyDown call onchange', e.target.value);
+  //     onChange(e);
+  //   }
+  // }
+
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 10
+    }
+  }, /*#__PURE__*/React.createElement(UrlsInput, {
+    value: values.urls,
+    onChange: e => onChange({
+      ...values,
+      urls: e.target.value
+    })
+  }), /*#__PURE__*/React.createElement("form", {
+    onSubmit: handleSubmit
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'relative',
+      width: '100%',
+      marginTop: 8,
+      opacity: loading ? 0.5 : 1
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'absolute',
+      right: 2,
+      bottom: 5
+    }
+  }, /*#__PURE__*/React.createElement(Button, {
+    type: "submit",
+    style: {
+      height: 30,
+      width: 30,
+      borderRadius: 15,
+      padding: 0,
+      boxShadow: 'unset'
+    },
+    loading: loading,
+    disabled: loading || disabled
+  }, /*#__PURE__*/React.createElement(FaArrowRight, {
+    size: 14
+  }))), /*#__PURE__*/React.createElement(Textarea, {
+    style: {
+      width: '100%',
+      fontFamily: 'sans-serif',
+      fontSize: 16,
+      resize: 'none',
+      padding: 8,
+      paddingLeft: 12,
+      paddingRight: 36,
+      borderRadius: 18,
+      minHeight: 80
+    },
+    type: "text",
+    value: values.prompt,
+    onChange: e => onChange({
+      ...values,
+      prompt: e.target.value
+    }),
+    placeholder: 'Example: "Look for links to articles, and on each article page, find the author, the publication date, and summarize it in 2-10 words."'
+  }))));
 };
 //# sourceMappingURL=WorkflowPrompt.js.map

@@ -4,3 +4,5 @@ export const docsUrl = 'https://docs.fetchfoxai.com'
 export const xUrl = 'https://x.com/FetchFoxAI';
 export const discordUrl = 'https://discord.gg/mM54bwdu59';
 export const primaryColor = '#df6546';
+
+export const apiHost = 'http://localhost:8081';

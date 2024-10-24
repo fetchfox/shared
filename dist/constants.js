@@ -1,13 +1,8 @@
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.xUrl = exports.startUrl = exports.primaryColor = exports.installUrl = exports.docsUrl = exports.discordUrl = void 0;
-var installUrl = exports.installUrl = 'https://chromewebstore.google.com/detail/fetchfox/meieeikgpmlhmfjmjgciiclgmbcocfnk?authuser=0&hl=en';
-var startUrl = exports.startUrl = 'https://ortutay.substack.com/p/im-making-an-ai-powered-scraper';
-var docsUrl = exports.docsUrl = 'https://docs.fetchfoxai.com';
-var xUrl = exports.xUrl = 'https://x.com/FetchFoxAI';
-var discordUrl = exports.discordUrl = 'https://discord.gg/mM54bwdu59';
-var primaryColor = exports.primaryColor = '#df6546';
+export const installUrl = 'https://chromewebstore.google.com/detail/fetchfox/meieeikgpmlhmfjmjgciiclgmbcocfnk?authuser=0&hl=en';
+export const startUrl = 'https://ortutay.substack.com/p/im-making-an-ai-powered-scraper';
+export const docsUrl = 'https://docs.fetchfoxai.com';
+export const xUrl = 'https://x.com/FetchFoxAI';
+export const discordUrl = 'https://discord.gg/mM54bwdu59';
+export const primaryColor = '#df6546';
+export const apiHost = 'http://localhost:8081';
 //# sourceMappingURL=constants.js.map
