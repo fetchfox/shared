@@ -21,7 +21,7 @@ export const Button = (props) => {
     extraStyles.cursor = 'default';
   }
 
-  let className = props.className === undefined ? 'Button' : props.className;
+  let className = props.className === undefined ? 'Button' : 'Button ' + props.className;
   if (props.simple) {
     className += ' Button-simple';
   }

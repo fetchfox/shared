@@ -4,6 +4,7 @@ import { Input } from '../input/Input';
 import { Textarea } from '../input/Textarea';
 import { Button } from '../input/Button';
 import { FaArrowRight } from 'react-icons/fa';
+import { useGlobalContext }  from '@/src/contexts/index.js';
 
 const UrlsInput = ({ value, onChange}) => {
   return (
@@ -17,9 +18,12 @@ const UrlsInput = ({ value, onChange}) => {
   );
 }
 
-export const WorkflowPrompt = ({ fox, values, onChange, onWorkflow }) => {
+export const WorkflowPrompt = ({ values, onChange, onWorkflow }) => {
+  const { fox } = useGlobalContext();
   const [loading, setLoading] = useState();
   const [disabled, setDisabled] = useState();
+
+  console.log('WorkflowPrompt fox', fox);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

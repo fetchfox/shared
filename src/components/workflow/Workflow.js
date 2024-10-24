@@ -26,6 +26,8 @@ import { Error } from '@/src/components/error/Error.js';
 import { primaryColor } from '@/src/constants.js';
 import { endpoint } from '@/src/utils.js';
 
+import './Workflow.css';
+
 const ConstStep = ({ step, onEdit, prettyName }) => {
   const nodes = step.args.items.map(item => (
     <div key={item.url}>{item.url}</div>
@@ -193,7 +195,10 @@ const StepHeader = ({
                 }}
       >
       <div>{prettyName}</div>
-      <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+      <div
+        className="controls"
+        style={{ display: 'flex', gap: 10, alignItems: 'center' }}
+        >
         {onDone && <Button
           trans small
           onClick={onDone}
@@ -201,6 +206,7 @@ const StepHeader = ({
           Cancel
         </Button>}
         {onRemove && <Button
+          className="hover-control"
           simple gray
           onClick={onRemove}
           tooltip="Remove"
@@ -215,6 +221,7 @@ const StepHeader = ({
           Save
         </Button>}
         {onEdit && <Button
+          className="hover-control"
           simple gray
           onClick={onEdit}
           tooltip="Edit"
@@ -523,15 +530,10 @@ export const Step = ({
     };
     let pair = {
       'const': [
-        <ConstStep
-          {...childProps}
-          prettyName={`Initialize`}
-        />,
-        <ConstStepEdit
-          {...childProps}
-          prettyName={`Initialize`}
-        />,
+        <ConstStep {...childProps} prettyName={`Initialize`} />,
+        <ConstStepEdit{...childProps} prettyName={`Initialize`} />,
       ],
+
     //   'exportUrls': [
     //     <ExportUrlsStep
     //       index={index}
@@ -555,14 +557,8 @@ export const Step = ({
 
     if (!pair) {
       pair = [
-        <GenericStep
-          {...childProps}
-          prettyName={prettyName}
-        />,
-        <GenericStepEdit
-          {...childProps}
-          prettyName={prettyName}
-        />,
+        <GenericStep {...childProps} prettyName={prettyName} />,
+        <GenericStepEdit {...childProps} prettyName={prettyName} />,
       ];
     }
 
@@ -571,7 +567,7 @@ export const Step = ({
   }
 
   return (
-    <div>
+    <div className="Step">
       <div style={{ border: '1px solid #ccc',
                     background: '#fff',
                     boxShadow: `2px 2px #ddd`,

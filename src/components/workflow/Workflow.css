@@ -1,0 +1,10 @@
+.Step:hover {
+}
+
+.Step .hover-control {
+  visibility: hidden;
+}
+
+.Step:hover .hover-control {
+  visibility: unset;
+}
