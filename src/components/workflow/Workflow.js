@@ -2,8 +2,121 @@ import React, { useState, useEffect, useRef } from 'react';
 import { FaArrowAltCircleDown, FaCheckCircle } from 'react-icons/fa';
 import { IoArrowUndo } from "react-icons/io5";
 import { useGlobalContext }  from '@/src/contexts/index.js';
-
+import { Button } from '@/src/components/input/Button.js';
+import { Input } from '@/src/components/input/Input.js';
+import { Error } from '@/src/components/error/Error.js';
 import { primaryColor } from '@/src/constants.js';
+import { endpoint } from '@/src/utils.js';
+
+const NewStep = ({ onChange, onCancel }) => {
+  const { library } = useGlobalContext();
+
+  const nodes = Object.keys(library)
+    .filter(key => key != 'const')
+    .map((key) => (
+      <div
+        style={{ background: '#fff',
+                 padding: 10,
+                 borderRadius: 8,
+                 cursor: 'pointer',
+                 border: '1px solid #ccc',
+               }}
+        key={key}
+        onClick={() => onChange(key)}
+        >
+        <div
+          style={{ fontWeight: 'bold',
+                   fontSize: 14,
+                   lineHeight: '16px',
+                 }}
+          >
+          {library[key].name.upperFirst()}
+        </div>
+        <div
+          style={{ lineHeight: '18px',
+                   fontSize: 12,
+                   marginTop: 5,
+                 }}>
+          {library[key].description}
+        </div>
+      </div>
+    ));
+
+  return (
+    <div>
+      <div style={{ display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}>
+        <p>What type of step should we add?</p>
+        <button
+          className="bt bt-outline bt-sm"
+          onClick={onCancel}
+          >
+          Cancel
+        </button>
+      </div>
+      <div style={{ display: 'grid',
+                    gridTemplateColumns: 'repeat(2, 1fr)',
+                    gridAutoRows: 'auto',
+                    gap: 10 }}>
+        {nodes}
+      </div>
+
+      {/*
+      <pre>{JSON.stringify(library, null, 2)}</pre>
+      */}
+    </div>
+  );
+}
+
+const StepHeader = ({
+  prettyName,
+  loading,
+  onEdit,
+  onDone,
+  onSave,
+  onRemove,
+}) => {
+  return (
+    <div style={{ display: 'flex',
+                  justifyContent: 'space-between',
+                  fontSize: 14,
+                  fontWeight: 'bold',
+                  marginBottom: 5,
+                }}
+      >
+      <div>{prettyName}</div>
+      <div style={{ display: 'flex', gap: 5 }}>
+        {onDone && <Button
+          className="bt bt-trans bt-sm"
+          onClick={onDone}
+          >
+          Cancel
+        </Button>}
+        {onRemove && <Button
+          className="bt bt-trans bt-sm"
+          onClick={onRemove}
+          >
+          Remove
+        </Button>}
+        {onSave && <Button
+          className="bt bt-sm"
+          onClick={onSave}
+          loading={loading}
+          >
+          Save
+        </Button>}
+        {onEdit && <Button
+          className="bt bt-trans bt-sm"
+          onClick={onEdit}
+          >
+          Edit
+        </Button>}
+      </div>
+    </div>
+  );
+}
 
 const GenericStep = ({ step, prettyName, onEdit, onRemove }) => {
   const { library } = useGlobalContext();
@@ -61,11 +174,11 @@ const GenericStep = ({ step, prettyName, onEdit, onRemove }) => {
 
   return (
     <div>
-      {/*(<StepHeader
+      <StepHeader
         prettyName={prettyName}
         onEdit={onEdit}
         onRemove={onRemove}
-      />*/}
+      />
 
       <table className="dense">
         <tbody>{rows}</tbody>
@@ -73,6 +186,165 @@ const GenericStep = ({ step, prettyName, onEdit, onRemove }) => {
     </div>
   );
 }
+
+const GenericStepEdit = (props) => {
+  const {
+    step,
+    index,
+    workflowId,
+    prettyName,
+    onSubmit,
+    onDone,
+    onRemove,
+  } = props;
+
+  const innerComponent = props.innerComponent || GenericStepEditInner;
+
+  const [step_, setStep_] = useState({});
+  const [errors, setErrors] = useState();
+  const [loading, setLoading] = useState();
+  const ctx = useGlobalContext();
+
+  const desc = ctx.library[step?.name];
+
+  useEffect(() => {
+    if (!step) return;
+    setStep_(JSON.parse(JSON.stringify(step)));
+  }, [step]);
+
+  const update = (key, value) => {
+    const copy = { ...step_ };
+    copy.args[key] = value;
+    setStep_(copy);
+  }
+
+  const save = async () => {
+    setLoading(true);
+    setErrors(null);
+    const data = await onSubmit(step_);
+    if (data?.errors) {
+      setErrors(data?.errors);
+    } else {
+      onDone();
+    }
+    setLoading(false);
+  }
+
+  return innerComponent({
+    ...props,
+    step: step_,
+    desc,
+    errors,
+    loading,
+    onSave: save,
+    onChange: update,
+  });
+}
+
+const GenericStepEditInner = ({
+  step,
+  desc,
+  loading,
+  errors,
+  index,
+  workflowId,
+  prettyName,
+  onChange,
+  onDone,
+  onSave,
+}) => {
+
+  const keys = Object.keys(step.args || {});
+  const rows = keys.map(key => {
+    if (!desc) return null;
+
+
+    const argDesc = desc.args[key];
+    let inputNode = (
+      <div>
+        TODO{JSON.stringify(argDesc.format)}<br/>
+        TODO{JSON.stringify(step.args[key])}<br/>
+      </div>
+    );
+
+    switch (argDesc.format) {
+      case 'list':
+        inputNode = (
+          <ListInput
+            style={{ width: '100%' }}
+            value={step.args[key]}
+            onChange={(val) => onChange(key, val)}
+          />
+        );
+        break;
+
+      case 'choices':
+        inputNode = (
+          <Select
+            style={{ width: '100%' }}
+            choices={argDesc.choices.map(x => [x])}
+            value={step.args[key]}
+            onChange={(val) => onChange(key, val)}
+          />
+        );
+        break;
+
+      case 'boolean':
+        inputNode = (
+          <Select
+            style={{ width: '100%' }}
+            choices={[[true, 'yes'], [false, 'no']]}
+            value={step.args[key]}
+            onChange={(val) => onChange(key, val)}
+          />
+        );
+        break;
+
+      default:
+        inputNode = (
+          <Input
+            style={{ width: '100%' }}
+            value={step.args[key]}
+            onChange={(e) => onChange(key, e.target.value)}
+          />
+        );
+        break;
+    }
+
+    return (
+      <tr>
+        <th style={{ width: '100px', whiteSpace: 'nowrap' }}>
+          {key.upperFirst()}
+        </th>
+        <td style={{ width: '100%' }}>
+          {inputNode}
+          <Error small message={errors && errors[key]} />
+        </td>
+      </tr>
+    );
+  });
+
+  return (
+    <div>
+      <StepHeader
+        prettyName={prettyName}
+        loading={loading}
+        onDone={onDone}
+        onSave={onSave}
+      />
+      <div>
+        <table className="dense">
+          <tbody>{rows}</tbody>
+        </table>
+      </div>
+
+      {/*
+      <pre>desc:{JSON.stringify(desc, null, 2)}</pre>
+      */}
+    </div>
+  );
+}
+
 
 export const Step = ({
   index,
@@ -168,16 +440,15 @@ export const Step = ({
           onEdit={() => setEditing(true)}
           onRemove={onRemove}
         />,
-        null,
-        // <GenericStepEdit
-        //   step={step}
-        //   index={index}
-        //   workflowId={workflowId}
-        //   prettyName={fallbackPrettyName}
-        //   onSubmit={onSubmit}
-        //   onDone={() => setEditing(false)}
-        //   onRemove={onRemove}
-        // />,
+        <GenericStepEdit
+          step={step}
+          index={index}
+          workflowId={workflowId}
+          prettyName={fallbackPrettyName}
+          onSubmit={onSubmit}
+          onDone={() => setEditing(false)}
+          onRemove={onRemove}
+        />,
       ];
     }
 
@@ -235,9 +506,91 @@ export const Step = ({
   );
 }
 
-export const Workflow = ({ workflow }) => {
+export const Workflow = ({ workflow, onChange }) => {
+  const { library } = useGlobalContext();
   const pairs = [];
   const steps = workflow?.steps || [];
+  const [undoData, setUndoData] = useState();
+
+  const handleSubmit = async (index, step) => {
+    const copy = JSON.parse(JSON.stringify(workflow));
+    copy.steps[index] = step;
+
+    const resp = await fetch(
+      endpoint(`/api/workflow/validate`),
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ steps: copy.steps }),
+      });
+    const data = await resp.json();
+    console.log('validate resp', data);
+    if (data.errors) {
+      return { errors: data.errors[index] };
+    }
+
+    if (workflow.id) {
+      const data = await commit(copy);
+      if (data.errors) return { errors: data.errors[index] };
+      onChange(data.workflow);
+    } else {
+      onChange(copy);
+    }
+  }
+
+  const addStep = async (step, index) => {
+    const copy = JSON.parse(JSON.stringify(workflow));
+    copy.steps.splice(index, 0, step);
+
+    // const d = {};
+    // d[index] = 'add-animation';
+    // setExtraClasses(d);
+    // setTimeout(() => setExtraClasses(d), 1);
+    // setTimeout(() => setExtraClasses({}), 150);
+
+    if (step.name != 'new' && workflow.id) {
+      const data = await commit(copy);
+      if (data.errors) return { errors: data.errors[index] };
+      onChange(data.workflow);
+    } else {
+      onChange(copy);
+    }
+  }
+
+  const undo = () => {
+    addStep(undoData.step, undoData.index);
+    setUndoData(null);
+  }
+
+  const setStepWithName = async (name, index) => {
+    const s = { name, args: {} };
+    const desc = library[name];
+    for (const key of Object.keys(desc.args)) {
+      s.args[key] = desc.args[key].default || null;
+    }
+
+    const copy = JSON.parse(JSON.stringify(workflow));
+    copy.steps[index] = s;
+    onChange(copy);
+  }
+
+  const removeStep = async (index) => {
+    const copy = JSON.parse(JSON.stringify(workflow));
+    const removed = JSON.parse(JSON.stringify(copy.steps[index]));
+    copy.steps.splice(index, 1);
+
+    onChange(copy);
+    setUndoData({ step: removed, index });
+    setTimeout(() => setUndoData(null), 4000);
+
+    if (workflow.id) {
+      const data = await commit(copy);
+      if (data.errors) return { errors: data.errors[index] };
+      onChange(data.workflow);
+    } else {
+      onChange(copy);
+    }
+  }
 
   // TODO
   const results = [];
@@ -291,11 +644,11 @@ export const Workflow = ({ workflow }) => {
       result: pair.result,
       workflow: workflow,
       workflowId: workflow.id,
-      // onSubmit: (val) => handleSubmit(index, val),
-      // onAddStep: () => addStep({ name: 'new', args: {} }, index + 1),
-      // onSetStepWithName: (name, index) => setStepWithName(name, index),
-      // onRemove: () => removeStep(index),
-      // onUndo: undoData?.index == index + 1 ? undo : null,
+      onSubmit: (val) => handleSubmit(index, val),
+      onAddStep: () => addStep({ name: 'new', args: {} }, index + 1),
+      onSetStepWithName: (name, index) => setStepWithName(name, index),
+      onRemove: () => removeStep(index),
+      onUndo: undoData?.index == index + 1 ? undo : null,
     };
 
     return <Step {...props} />;

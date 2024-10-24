@@ -2,7 +2,95 @@ import React, { useState, useEffect, useRef } from 'react';
 import { FaArrowAltCircleDown, FaCheckCircle } from 'react-icons/fa';
 import { IoArrowUndo } from "react-icons/io5";
 import { useGlobalContext } from "../../contexts/index.js";
+import { Button } from "../input/Button.js";
+import { Input } from "../input/Input.js";
+import { Error } from "../error/Error.js";
 import { primaryColor } from "../../constants.js";
+import { endpoint } from "../../utils.js";
+const NewStep = ({
+  onChange,
+  onCancel
+}) => {
+  const {
+    library
+  } = useGlobalContext();
+  const nodes = Object.keys(library).filter(key => key != 'const').map(key => /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: '#fff',
+      padding: 10,
+      borderRadius: 8,
+      cursor: 'pointer',
+      border: '1px solid #ccc'
+    },
+    key: key,
+    onClick: () => onChange(key)
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontWeight: 'bold',
+      fontSize: 14,
+      lineHeight: '16px'
+    }
+  }, library[key].name.upperFirst()), /*#__PURE__*/React.createElement("div", {
+    style: {
+      lineHeight: '18px',
+      fontSize: 12,
+      marginTop: 5
+    }
+  }, library[key].description)));
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between'
+    }
+  }, /*#__PURE__*/React.createElement("p", null, "What type of step should we add?"), /*#__PURE__*/React.createElement("button", {
+    className: "bt bt-outline bt-sm",
+    onClick: onCancel
+  }, "Cancel")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(2, 1fr)',
+      gridAutoRows: 'auto',
+      gap: 10
+    }
+  }, nodes));
+};
+const StepHeader = ({
+  prettyName,
+  loading,
+  onEdit,
+  onDone,
+  onSave,
+  onRemove
+}) => {
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      fontSize: 14,
+      fontWeight: 'bold',
+      marginBottom: 5
+    }
+  }, /*#__PURE__*/React.createElement("div", null, prettyName), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      gap: 5
+    }
+  }, onDone && /*#__PURE__*/React.createElement(Button, {
+    className: "bt bt-trans bt-sm",
+    onClick: onDone
+  }, "Cancel"), onRemove && /*#__PURE__*/React.createElement(Button, {
+    className: "bt bt-trans bt-sm",
+    onClick: onRemove
+  }, "Remove"), onSave && /*#__PURE__*/React.createElement(Button, {
+    className: "bt bt-sm",
+    onClick: onSave,
+    loading: loading
+  }, "Save"), onEdit && /*#__PURE__*/React.createElement(Button, {
+    className: "bt bt-trans bt-sm",
+    onClick: onEdit
+  }, "Edit")));
+};
 const GenericStep = ({
   step,
   prettyName,
@@ -58,9 +146,141 @@ const GenericStep = ({
       width: '100%'
     }
   }, render(key))));
-  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("table", {
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(StepHeader, {
+    prettyName: prettyName,
+    onEdit: onEdit,
+    onRemove: onRemove
+  }), /*#__PURE__*/React.createElement("table", {
     className: "dense"
   }, /*#__PURE__*/React.createElement("tbody", null, rows)));
+};
+const GenericStepEdit = props => {
+  const {
+    step,
+    index,
+    workflowId,
+    prettyName,
+    onSubmit,
+    onDone,
+    onRemove
+  } = props;
+  const innerComponent = props.innerComponent || GenericStepEditInner;
+  const [step_, setStep_] = useState({});
+  const [errors, setErrors] = useState();
+  const [loading, setLoading] = useState();
+  const ctx = useGlobalContext();
+  const desc = ctx.library[step?.name];
+  useEffect(() => {
+    if (!step) return;
+    setStep_(JSON.parse(JSON.stringify(step)));
+  }, [step]);
+  const update = (key, value) => {
+    const copy = {
+      ...step_
+    };
+    copy.args[key] = value;
+    setStep_(copy);
+  };
+  const save = async () => {
+    setLoading(true);
+    setErrors(null);
+    const data = await onSubmit(step_);
+    if (data?.errors) {
+      setErrors(data?.errors);
+    } else {
+      onDone();
+    }
+    setLoading(false);
+  };
+  return innerComponent({
+    ...props,
+    step: step_,
+    desc,
+    errors,
+    loading,
+    onSave: save,
+    onChange: update
+  });
+};
+const GenericStepEditInner = ({
+  step,
+  desc,
+  loading,
+  errors,
+  index,
+  workflowId,
+  prettyName,
+  onChange,
+  onDone,
+  onSave
+}) => {
+  const keys = Object.keys(step.args || {});
+  const rows = keys.map(key => {
+    if (!desc) return null;
+    const argDesc = desc.args[key];
+    let inputNode = /*#__PURE__*/React.createElement("div", null, "TODO", JSON.stringify(argDesc.format), /*#__PURE__*/React.createElement("br", null), "TODO", JSON.stringify(step.args[key]), /*#__PURE__*/React.createElement("br", null));
+    switch (argDesc.format) {
+      case 'list':
+        inputNode = /*#__PURE__*/React.createElement(ListInput, {
+          style: {
+            width: '100%'
+          },
+          value: step.args[key],
+          onChange: val => onChange(key, val)
+        });
+        break;
+      case 'choices':
+        inputNode = /*#__PURE__*/React.createElement(Select, {
+          style: {
+            width: '100%'
+          },
+          choices: argDesc.choices.map(x => [x]),
+          value: step.args[key],
+          onChange: val => onChange(key, val)
+        });
+        break;
+      case 'boolean':
+        inputNode = /*#__PURE__*/React.createElement(Select, {
+          style: {
+            width: '100%'
+          },
+          choices: [[true, 'yes'], [false, 'no']],
+          value: step.args[key],
+          onChange: val => onChange(key, val)
+        });
+        break;
+      default:
+        inputNode = /*#__PURE__*/React.createElement(Input, {
+          style: {
+            width: '100%'
+          },
+          value: step.args[key],
+          onChange: e => onChange(key, e.target.value)
+        });
+        break;
+    }
+    return /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
+      style: {
+        width: '100px',
+        whiteSpace: 'nowrap'
+      }
+    }, key.upperFirst()), /*#__PURE__*/React.createElement("td", {
+      style: {
+        width: '100%'
+      }
+    }, inputNode, /*#__PURE__*/React.createElement(Error, {
+      small: true,
+      message: errors && errors[key]
+    })));
+  });
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(StepHeader, {
+    prettyName: prettyName,
+    loading: loading,
+    onDone: onDone,
+    onSave: onSave
+  }), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("table", {
+    className: "dense"
+  }, /*#__PURE__*/React.createElement("tbody", null, rows))));
 };
 export const Step = ({
   index,
@@ -143,17 +363,15 @@ export const Step = ({
         prettyName: fallbackPrettyName,
         onEdit: () => setEditing(true),
         onRemove: onRemove
-      }), null
-      // <GenericStepEdit
-      //   step={step}
-      //   index={index}
-      //   workflowId={workflowId}
-      //   prettyName={fallbackPrettyName}
-      //   onSubmit={onSubmit}
-      //   onDone={() => setEditing(false)}
-      //   onRemove={onRemove}
-      // />,
-      ];
+      }), /*#__PURE__*/React.createElement(GenericStepEdit, {
+        step: step,
+        index: index,
+        workflowId: workflowId,
+        prettyName: fallbackPrettyName,
+        onSubmit: onSubmit,
+        onDone: () => setEditing(false),
+        onRemove: onRemove
+      })];
     }
     node = pair[0];
     editNode = pair[1];
@@ -207,10 +425,101 @@ export const Step = ({
   }))));
 };
 export const Workflow = ({
-  workflow
+  workflow,
+  onChange
 }) => {
+  const {
+    library
+  } = useGlobalContext();
   const pairs = [];
   const steps = workflow?.steps || [];
+  const [undoData, setUndoData] = useState();
+  const handleSubmit = async (index, step) => {
+    const copy = JSON.parse(JSON.stringify(workflow));
+    copy.steps[index] = step;
+    const resp = await fetch(endpoint(`/api/workflow/validate`), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        steps: copy.steps
+      })
+    });
+    const data = await resp.json();
+    console.log('validate resp', data);
+    if (data.errors) {
+      return {
+        errors: data.errors[index]
+      };
+    }
+    if (workflow.id) {
+      const data = await commit(copy);
+      if (data.errors) return {
+        errors: data.errors[index]
+      };
+      onChange(data.workflow);
+    } else {
+      onChange(copy);
+    }
+  };
+  const addStep = async (step, index) => {
+    const copy = JSON.parse(JSON.stringify(workflow));
+    copy.steps.splice(index, 0, step);
+
+    // const d = {};
+    // d[index] = 'add-animation';
+    // setExtraClasses(d);
+    // setTimeout(() => setExtraClasses(d), 1);
+    // setTimeout(() => setExtraClasses({}), 150);
+
+    if (step.name != 'new' && workflow.id) {
+      const data = await commit(copy);
+      if (data.errors) return {
+        errors: data.errors[index]
+      };
+      onChange(data.workflow);
+    } else {
+      onChange(copy);
+    }
+  };
+  const undo = () => {
+    addStep(undoData.step, undoData.index);
+    setUndoData(null);
+  };
+  const setStepWithName = async (name, index) => {
+    const s = {
+      name,
+      args: {}
+    };
+    const desc = library[name];
+    for (const key of Object.keys(desc.args)) {
+      s.args[key] = desc.args[key].default || null;
+    }
+    const copy = JSON.parse(JSON.stringify(workflow));
+    copy.steps[index] = s;
+    onChange(copy);
+  };
+  const removeStep = async index => {
+    const copy = JSON.parse(JSON.stringify(workflow));
+    const removed = JSON.parse(JSON.stringify(copy.steps[index]));
+    copy.steps.splice(index, 1);
+    onChange(copy);
+    setUndoData({
+      step: removed,
+      index
+    });
+    setTimeout(() => setUndoData(null), 4000);
+    if (workflow.id) {
+      const data = await commit(copy);
+      if (data.errors) return {
+        errors: data.errors[index]
+      };
+      onChange(data.workflow);
+    } else {
+      onChange(copy);
+    }
+  };
 
   // TODO
   const results = [];
@@ -251,12 +560,15 @@ export const Workflow = ({
       step: pair.step,
       result: pair.result,
       workflow: workflow,
-      workflowId: workflow.id
-      // onSubmit: (val) => handleSubmit(index, val),
-      // onAddStep: () => addStep({ name: 'new', args: {} }, index + 1),
-      // onSetStepWithName: (name, index) => setStepWithName(name, index),
-      // onRemove: () => removeStep(index),
-      // onUndo: undoData?.index == index + 1 ? undo : null,
+      workflowId: workflow.id,
+      onSubmit: val => handleSubmit(index, val),
+      onAddStep: () => addStep({
+        name: 'new',
+        args: {}
+      }, index + 1),
+      onSetStepWithName: (name, index) => setStepWithName(name, index),
+      onRemove: () => removeStep(index),
+      onUndo: undoData?.index == index + 1 ? undo : null
     };
     return /*#__PURE__*/React.createElement(Step, props);
     // if (withResults) {

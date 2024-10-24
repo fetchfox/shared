@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Loading } from '../common/Loading';
-import { Input } from '../input/Input';
-import { Textarea } from '../input/Textarea';
-import { Button } from '../input/Button';
+import { Loading } from "../common/Loading";
+import { Input } from "../input/Input";
+import { Textarea } from "../input/Textarea";
+import { Button } from "../input/Button";
 import { FaArrowRight } from 'react-icons/fa';
 const UrlsInput = ({
   value,
