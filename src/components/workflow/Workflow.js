@@ -21,10 +21,13 @@ import { primaryColor } from '@/src/constants.js';
 import { endpoint } from '@/src/utils.js';
 
 const ConstStep = ({ step, prettyName }) => {
+  const nodes = step.args.items.map(item => (
+    <div key={item.url}>{item.url}</div>
+  ))
   return (
     <div>
-      <StepHeader prettyName={prettyName} />
-      <TableFromItems items={step.args.items} />
+      <StepHeader prettyName="Starting URL" />
+      {nodes}
     </div>
   );
 }
@@ -480,8 +483,8 @@ export const Step = ({
   return (
     <div className={extraClasses}>
       <div style={{ border: '1px solid #ccc',
-                    background: '#f3f3f3',
-                    boxShadow: `2px 2px #eee`,
+                    background: '#fff',
+                    boxShadow: `2px 2px #ddd`,
                     borderRadius: 4,
                     padding: 10,
                     fontSize: 14,
