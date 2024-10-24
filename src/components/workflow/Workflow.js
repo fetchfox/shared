@@ -34,7 +34,7 @@ const ConstStep = ({ step, onEdit, prettyName }) => {
     <div>
       <StepHeader
         onEdit={onEdit}
-        prettyName="Starting URL" />
+        prettyName="Starting URLs" />
       {nodes}
     </div>
   );
@@ -494,6 +494,7 @@ export const Step = ({
 
   let node;
   let editNode;
+  let prettyName;
 
   if (step.name == 'new') {
     editNode = (
@@ -503,8 +504,13 @@ export const Step = ({
       />
     );
   } else {
-    //const fallbackPrettyName = `Step ${index + 1}: ${step.name.replace(/-/g, ' ').upperFirst()}`;
-    const fallbackPrettyName = `${step.name.replace(/-/g, ' ').upperFirst()}`;
+    prettyName = {
+      crawl: 'Find more URLs',
+      extract: 'Extract data',
+    }[step.name];
+    if (!prettyName) {
+      prettyName = `${step.name.replace(/-/g, ' ').upperFirst()}`;
+    }
 
     const childProps = {
       index,
@@ -551,11 +557,11 @@ export const Step = ({
       pair = [
         <GenericStep
           {...childProps}
-          prettyName={fallbackPrettyName}
+          prettyName={prettyName}
         />,
         <GenericStepEdit
           {...childProps}
-          prettyName={fallbackPrettyName}
+          prettyName={prettyName}
         />,
       ];
     }
