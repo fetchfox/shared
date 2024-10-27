@@ -9,3 +9,5 @@ export { GlobalContext, useGlobalContext } from './contexts/index.js';
 export { useStepLibrary } from './state/workflow.js';
 
 export { generateApiKey } from './api/index.js';
+
+export { primaryColor } from './constants.js';

@@ -20,6 +20,9 @@ import { useGlobalContext }  from '@/src/contexts/index.js';
 import { TableFromItems } from '@/src/components/table/TableFromItems';
 import { Button } from '@/src/components/input/Button.js';
 import { Input } from '@/src/components/input/Input.js';
+import { ListInput } from '@/src/components/input/ListInput.js';
+import { DictInput } from '@/src/components/input/DictInput.js';
+import { Select } from '@/src/components/input/Select.js';
 import { Textarea } from '@/src/components/input/Textarea.js';
 import { Error } from '@/src/components/error/Error.js';
 
@@ -257,26 +260,29 @@ const GenericStep = ({ step, prettyName, onEdit, onRemove }) => {
     if (!desc) return null;
 
     const argDesc = desc.args[key];
-
-    console.log('key', key);
-    console.log('step.args', step.args);
-    console.log('argDesc', argDesc);
+    const arg = step.args[key];
 
     switch (argDesc.format) {
       case 'list':
-        return <ul>{step.args[key].map(x => <li>{x}</li>)}</ul>;
+        return <ul>{arg.map(x => <li>{x}</li>)}</ul>;
 
       case 'object':
-        return JSON.stringify(step.args);
+        return (
+          <table>
+            <tbody>
+              {Object.keys(arg).map(k => <tr><th style={{ width: '10%' }}>{k}</th><td>{arg[k]}</td></tr>)}
+            </tbody>
+          </table>
+        );
 
       case 'boolean':
-        return step.args[key] ? 'yes' : 'no';
+        return arg ? 'yes' : 'no';
 
       case 'choices':
-        return step.args[key];
+        return arg;
 
       default:
-        return JSON.stringify(step.args[key]);
+        return JSON.stringify(arg);
     }
   }
 
@@ -373,15 +379,9 @@ const GenericStepEditInner = ({
   const rows = keys.map(key => {
     if (!desc) return null;
 
-
     const argDesc = desc.args[key];
-    let inputNode = (
-      <div>
-        TODO{JSON.stringify(argDesc.format)}<br/>
-        TODO{JSON.stringify(step.args[key])}<br/>
-      </div>
-    );
 
+    let inputNode;
     switch (argDesc.format) {
       case 'list':
         inputNode = (
@@ -390,6 +390,18 @@ const GenericStepEditInner = ({
             value={step.args[key]}
             onChange={(val) => onChange(key, val)}
           />
+        );
+        break;
+
+      case 'object':
+        inputNode = (
+          <div>
+            <DictInput
+              style={{ width: '100%' }}
+              value={step.args && step.args[key]}
+              onChange={(val) => onChange(key, val)}
+            />
+          </div>
         );
         break;
 
