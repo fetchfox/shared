@@ -257,10 +257,15 @@ export const Step = ({
   onSetStepWithName,
   onRemove,
   onUndo,
+  onEditing,
 }) => {
 
   const [loading, setLoading] = useState();
   const [editing, setEditing] = useState();
+
+  useEffect(() => {
+    onEditing(editing);
+  }, [editing]);
 
   useEffect(() => {
     let allNull = true;
@@ -408,7 +413,7 @@ export const Step = ({
   );
 }
 
-export const Workflow = ({ workflow, editable, onChange }) => {
+export const Workflow = ({ workflow, editable, onChange, onEditing }) => {
   const { library } = useGlobalContext();
   const pairs = [];
   const steps = workflow?.steps || [];
@@ -517,12 +522,11 @@ export const Workflow = ({ workflow, editable, onChange }) => {
       last: index == workflow?.steps.length - 1,
       lastResult: index == resultsWithItems.length - 1,
       editable,
-      // done: done,
-      // running: running,
       step: pair.step,
       result: pair.result,
       workflow: workflow,
       workflowId: workflow.id,
+      onEditing,
       onSubmit: (val) => handleSubmit(index, val),
       onAddStep: () => addStep({ name: 'new', args: {} }, index + 1),
       onSetStepWithName: (name, index) => setStepWithName(name, index),

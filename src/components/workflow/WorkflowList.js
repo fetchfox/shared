@@ -3,7 +3,7 @@ import { FaTrash } from 'react-icons/fa';
 import { Button } from '../input/Button.js';
 import './WorkflowList.css';
 
-export const WorkflowList = ({ workflows, onOpen, onRemove }) => {
+export const WorkflowList = ({ workflows, limit, onOpen, onRemove }) => {
   const nodes = workflows
     .map(wf => (
       <div
@@ -17,11 +17,7 @@ export const WorkflowList = ({ workflows, onOpen, onRemove }) => {
                }}
         onClick={() => onOpen(wf.id)}
         >
-          <div
-            style={{ fontWeight: 'bold',
-                     whiteSpace: 'nowrap',
-                   }}
-            >
+          <div style={{ fontWeight: 'bold', whiteSpace: 'nowrap' }}>
             {wf.name}
           </div>
           <div
@@ -54,7 +50,7 @@ export const WorkflowList = ({ workflows, onOpen, onRemove }) => {
                  marginTop: 10,
                }}
         >
-        {nodes}
+        {limit ? nodes.slice(0, limit) : nodes}
       </div>
     </div>
   );

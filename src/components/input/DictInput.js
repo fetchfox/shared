@@ -30,6 +30,7 @@ const Pair = ({
           style={{ width: '120px' }}
           value={k}
           onChange={(e) => onChangeKey(e.target.value)}
+          placeholder="Field"
         />
       </div>
       <div style={{ width: '100%' }}>
@@ -37,6 +38,7 @@ const Pair = ({
           style={{ width: '100%' }}
           value={val}
           onChange={(e) => onChangeVal(e.target.value)}
+          placeholder="Describe the field"
         />
       </div>
       <div
@@ -84,6 +86,12 @@ export const DictInput = (props) => {
     }
     props.onChange && props.onChange(dict);
   }, [pairs]);
+
+  const add = (key) => {
+    const copy = [...pairs];
+    copy.push(['', '']);
+    setPairs(copy);
+  }
 
   const remove = (key) => {
     const copy = [];
@@ -137,6 +145,16 @@ export const DictInput = (props) => {
              }}
       >
       {nodes}
+      <div
+        style={{ display: 'flex',
+                 margin: '6px 0 2px 0',
+                 color: '#888',
+                 cursor: 'pointer' }}
+        onClick={add}
+        >
+        <div style={{ marginRight : 5, display: 'flex', alignItems: 'center' }}><FaCirclePlus fontSize={18} /></div>
+        <div style={{ fontWeight: 'bold' }}>Add Field</div>
+      </div>
 
       {/*
       TODO2
