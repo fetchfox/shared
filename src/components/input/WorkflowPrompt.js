@@ -88,6 +88,15 @@ export const WorkflowPrompt = ({
     onWorkflow(workflow);
   }
 
+  const handleKeyDown = (e) => {
+    const isMac = navigator.platform.toLowerCase().indexOf('mac') >= 0;
+    if (e.ctrlKey && e.key == 'Enter' ||
+        (isMac && e.metaKey && e.key == 'Enter')
+    ) {
+      handlePreview(e);
+    }
+  }
+
   const handlePreview = async (e) => {
     e.preventDefault();
     if (loading.preview) return;
@@ -96,11 +105,24 @@ export const WorkflowPrompt = ({
     setWorkflow(null);
     setLoading({ preview: true });
     setDisabled(true);
-    const wf = await fox.plan(`${values.urls} ${values.prompt}`);
+
+    const url = values.urls;
+    const html = url == currentUrl ? currentHtml : '';
+
+    const wf = await fox.plan({
+      prompt: values.prompt,
+      url,
+      html,
+    });
+
+    console.log('got wf', wf);
+
     const clean = cleanWorkflow(wf);
-    console.log('got clean', clean);
     setLoading({});
     setDisabled(false);
+
+    console.log('got wf', wf);
+    console.log('clean wf', clean);
 
     if (preview) {
       setWorkflow(clean);
@@ -207,6 +229,7 @@ export const WorkflowPrompt = ({
             disabled={disabled}
             value={values.prompt}
             onChange={(e) => onChange({ ...values, prompt: e.target.value })}
+            onKeyDown={handleKeyDown}
             placeholder={'Example: "Look for links to articles, and on each article page, find the author, the publication date, and summarize it in 2-10 words."'}
           />
         </div>
