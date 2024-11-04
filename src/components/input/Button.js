@@ -34,6 +34,9 @@ export const Button = (props) => {
   if (props.gray) {
     className += ' Button-gray';
   }
+  if (props.black) {
+    className += ' Button-black';
+  }
   if (props.white) {
     className += ' Button-white';
   }
@@ -53,11 +56,10 @@ export const Button = (props) => {
       style={extraStyles}
       {...props}
       className={className}
-      data-tooltip-id="tooltip"
+      data-tooltip-id="tooltip1"
       data-tooltip-content={props.tooltip}
       >
 
-      {props.tooltip && <Tooltip id="tooltip" place="bottom" />}
       {!props.loading && props.children}
       {props.loading && (
         <div style={{ marginTop: 1 }}>
@@ -67,6 +69,12 @@ export const Button = (props) => {
         />
         </div>)
        }
+        {props.tooltip && (
+          <Tooltip
+          id="tooltip1"
+          place={props.tooltipPlace || "bottom"}
+          />
+         )}
     </button>
   );
 }

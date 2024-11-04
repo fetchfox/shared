@@ -55,9 +55,9 @@ export const ByokInput = ({ value, onChange }) => {
         style={{ width: '100%'}}
         value={apiKey}
         onChange={(e) => change('apiKey', e.target.value)}
-        placeholder={`Enter your ${expand(value.provider)}API key`}
+        placeholder={`Enter your ${expand(value?.provider || '')}API key`}
       />}
-      {value.provider && p.apiKey && !loading && !ok &&(
+      {value.provider && p?.apiKey && !loading && !ok &&(
         <Error small message="API key not working" />
        )}
 

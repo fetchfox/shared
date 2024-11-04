@@ -29,16 +29,19 @@ import { Error } from '@/src/components/error/Error.js';
 import { primaryColor } from '@/src/constants.js';
 import { endpoint } from '@/src/utils.js';
 
+import { StepHeader } from './StepHeader.js';
+import { GenericStepEdit } from './GenericStepEdit.js';
+import { GlobalOptions } from './GlobalOptions.js';
 import './Workflow.css';
 
-const ConstStep = ({ step, onEdit, prettyName }) => {
+const ConstStep = ({ step, onEdit, editable, prettyName }) => {
   const nodes = step.args.items.map(item => (
     <div key={item.url}>{item.url}</div>
   ))
   return (
     <div>
       <StepHeader
-        onEdit={onEdit}
+        onEdit={editable && onEdit}
         prettyName="Starting URLs" />
       {nodes}
     </div>
@@ -181,78 +184,10 @@ const NewStep = ({ onChange, onCancel }) => {
   );
 }
 
-const StepHeader = ({
-  prettyName,
-  loading,
-  onEdit,
-  onDone,
-  onSave,
-  onRemove,
-}) => {
-  return (
-    <div style={{ display: 'flex',
-                  justifyContent: 'space-between',
-                  fontSize: 14,
-                  fontWeight: 'bold',
-                  marginBottom: 5,
-                }}
-      >
-      <div>{prettyName}</div>
-      <div
-        className="controls"
-        style={{ display: 'flex', gap: 10, alignItems: 'center' }}
-        >
-        {onDone && <Button
-          trans small
-          onClick={onDone}
-          >
-          Cancel
-        </Button>}
-        {onRemove && <Button
-          className="hover-control"
-          simple gray
-          onClick={onRemove}
-          tooltip="Remove"
-          >
-           <MdCancel size={18} />
-        </Button>}
-        {onSave && <Button
-          small
-          onClick={onSave}
-          loading={loading}
-          >
-          Save
-        </Button>}
-        {onEdit && <Button
-          className="hover-control"
-          simple gray
-          onClick={onEdit}
-          tooltip="Edit"
-          >
-         <MdEditSquare size={18} />
-        </Button>}
-      </div>
-    </div>
-  );
-}
-
-const GenericStep = ({ step, prettyName, onEdit, onRemove }) => {
+const GenericStep = ({ step, prettyName, editable, onEdit, onRemove }) => {
   const { library } = useGlobalContext();
   const desc = library ? library[step?.name] : {};
   const keys = Object.keys(step?.args);
-
-  // return (
-  //   <div>
-  //     {step?.name}<br/><br/>
-  //     {JSON.stringify(desc)}<br/><br/>
-  //     {JSON.stringify(keys)}<br/><br/>
-  //     {JSON.stringify(library)}<br/><br/>
-  //   </div>
-  // );
-
-  // const desc = library ? library[step?.name] : {};
-  // const keys = Object.keys(step?.args);
-  // const keys = Object.keys(desc?.args);
 
   if (!desc?.args) return null;
 
@@ -278,11 +213,13 @@ const GenericStep = ({ step, prettyName, onEdit, onRemove }) => {
       case 'boolean':
         return arg ? 'yes' : 'no';
 
+      case 'number':
+      case 'string':
       case 'choices':
         return arg;
 
       default:
-        return JSON.stringify(arg);
+        return <div>{argDesc.format} {JSON.stringify(arg)}</div>;
     }
   }
 
@@ -297,8 +234,8 @@ const GenericStep = ({ step, prettyName, onEdit, onRemove }) => {
     <div>
       <StepHeader
         prettyName={prettyName}
-        onEdit={onEdit}
-        onRemove={onRemove}
+        onEdit={editable && onEdit}
+        onRemove={editable && onRemove}
       />
 
       <table className="dense">
@@ -308,175 +245,11 @@ const GenericStep = ({ step, prettyName, onEdit, onRemove }) => {
   );
 }
 
-const GenericStepEdit = (props) => {
-  const {
-    step,
-    index,
-    workflowId,
-    prettyName,
-    onSubmit,
-    onDone,
-    onRemove,
-  } = props;
-
-  const innerComponent = props.innerComponent || GenericStepEditInner;
-
-  const [step_, setStep_] = useState({});
-  const [errors, setErrors] = useState();
-  const [loading, setLoading] = useState();
-  const ctx = useGlobalContext();
-
-  const desc = ctx.library[step?.name];
-
-  useEffect(() => {
-    if (!step) return;
-    setStep_(JSON.parse(JSON.stringify(step)));
-  }, [step]);
-
-  const update = (key, value) => {
-    const copy = { ...step_ };
-    copy.args[key] = value;
-    setStep_(copy);
-  }
-
-  const save = async () => {
-    setLoading(true);
-    setErrors(null);
-    const data = await onSubmit(step_);
-    if (data?.errors) {
-      setErrors(data?.errors);
-    } else {
-      onDone();
-    }
-    setLoading(false);
-  }
-
-  return innerComponent({
-    ...props,
-    step: step_,
-    desc,
-    errors,
-    loading,
-    onSave: save,
-    onChange: update,
-  });
-}
-
-const GenericStepEditInner = ({
-  step,
-  desc,
-  loading,
-  errors,
-  index,
-  workflowId,
-  prettyName,
-  onChange,
-  onDone,
-  onSave,
-}) => {
-
-  const keys = Object.keys(step.args || {});
-  const rows = keys.map(key => {
-    if (!desc) return null;
-
-    const argDesc = desc.args[key];
-
-    let inputNode;
-    switch (argDesc.format) {
-      case 'list':
-        inputNode = (
-          <ListInput
-            style={{ width: '100%' }}
-            value={step.args[key]}
-            onChange={(val) => onChange(key, val)}
-          />
-        );
-        break;
-
-      case 'object':
-        inputNode = (
-          <div>
-            <DictInput
-              style={{ width: '100%' }}
-              value={step.args && step.args[key]}
-              onChange={(val) => onChange(key, val)}
-            />
-          </div>
-        );
-        break;
-
-      case 'choices':
-        inputNode = (
-          <Select
-            style={{ width: '100%' }}
-            choices={argDesc.choices.map(x => [x])}
-            value={step.args[key]}
-            onChange={(val) => onChange(key, val)}
-          />
-        );
-        break;
-
-      case 'boolean':
-        inputNode = (
-          <Select
-            style={{ width: '100%' }}
-            choices={[[true, 'yes'], [false, 'no']]}
-            value={step.args[key]}
-            onChange={(val) => onChange(key, val)}
-          />
-        );
-        break;
-
-      default:
-        inputNode = (
-          <Input
-            style={{ width: '100%' }}
-            value={step.args[key]}
-            onChange={(e) => onChange(key, e.target.value)}
-          />
-        );
-        break;
-    }
-
-    return (
-      <tr>
-        <th style={{ width: '100px', whiteSpace: 'nowrap' }}>
-          {key.upperFirst()}
-        </th>
-        <td style={{ width: '100%', border: 0 }}>
-          {inputNode}
-          <Error small message={errors && errors[key]} />
-        </td>
-      </tr>
-    );
-  });
-
-  return (
-    <div>
-      <StepHeader
-        prettyName={prettyName}
-        loading={loading}
-        onDone={onDone}
-        onSave={onSave}
-      />
-      <div>
-        <table>
-          <tbody>{rows}</tbody>
-        </table>
-      </div>
-
-      {/*
-      <pre>desc:{JSON.stringify(desc, null, 2)}</pre>
-      */}
-    </div>
-  );
-}
-
-
 export const Step = ({
   index,
   step,
   last,
+  editable,
   workflow,
   workflowId,
   onSubmit,
@@ -534,6 +307,7 @@ export const Step = ({
     const childProps = {
       index,
       step,
+      editable,
       onSubmit,
       onRemove: () => { setEditing(false); onRemove() },
       workflowId,
@@ -609,7 +383,7 @@ export const Step = ({
             >
             <IoArrowUndo style={{ marginTop: -2 }} size={14} /> Undo
           </Button>}
-          {<Button
+          {editable && <Button
             simple gray
             onClick={onAddStep}
             tooltip="Add Step"
@@ -621,7 +395,7 @@ export const Step = ({
         <div style={{ padding: 10,
                       width: '100%',
                       textAlign: 'center',
-                      color: '#555',
+                      color: primaryColor,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -634,7 +408,7 @@ export const Step = ({
   );
 }
 
-export const Workflow = ({ workflow, onChange }) => {
+export const Workflow = ({ workflow, editable, onChange }) => {
   const { library } = useGlobalContext();
   const pairs = [];
   const steps = workflow?.steps || [];
@@ -657,26 +431,15 @@ export const Workflow = ({ workflow, onChange }) => {
       return { errors: data.errors[index] };
     }
 
-    if (workflow.id) {
-      const data = await commit(copy);
-      if (data.errors) return { errors: data.errors[index] };
-      onChange(data.workflow);
-    } else {
-      onChange(copy);
-    }
+    console.log('ONCHANGE', copy);
+
+    onChange(copy);
   }
 
   const addStep = async (step, index) => {
     const copy = JSON.parse(JSON.stringify(workflow));
     copy.steps.splice(index, 0, step);
-
-    if (step.name != 'new' && workflow.id) {
-      const data = await commit(copy);
-      if (data.errors) return { errors: data.errors[index] };
-      onChange(data.workflow);
-    } else {
-      onChange(copy);
-    }
+    onChange(copy);
   }
 
   const undo = () => {
@@ -702,16 +465,9 @@ export const Workflow = ({ workflow, onChange }) => {
     copy.steps.splice(index, 1);
 
     onChange(copy);
+
     setUndoData({ step: removed, index });
     setTimeout(() => setUndoData(null), 4000);
-
-    if (workflow.id) {
-      const data = await commit(copy);
-      if (data.errors) return { errors: data.errors[index] };
-      onChange(data.workflow);
-    } else {
-      onChange(copy);
-    }
   }
 
   // TODO
@@ -760,6 +516,7 @@ export const Workflow = ({ workflow, onChange }) => {
       index: index,
       last: index == workflow?.steps.length - 1,
       lastResult: index == resultsWithItems.length - 1,
+      editable,
       // done: done,
       // running: running,
       step: pair.step,
@@ -774,15 +531,18 @@ export const Workflow = ({ workflow, onChange }) => {
     };
 
     return <Step {...props} />;
-    // if (withResults) {
-    //   return <Pair {...props} />;
-    // } else {
-    //   return <Step {...props} />;
-    // }
   });
 
   return (
     <div>
+      <GlobalOptions
+        workflow={workflow}
+        onChange={onChange}
+      />
+      {/*
+      <pre>{JSON.stringify(workflow, null, 2)}</pre>
+      */}
+      <br />
       {nodes}
     </div>
   )

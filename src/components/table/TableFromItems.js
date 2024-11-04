@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Table.css'
 
-export const TableFromItems = ({ items, headers }) => {
+export const TableFromItems = ({ items, headers, reverse }) => {
   const [mode, setMode] = useState('compact');
   const overflow = 10;
   const [hoverId, setHoverId] = useState();
@@ -72,7 +72,7 @@ export const TableFromItems = ({ items, headers }) => {
 
   let id = 1;
   const headerNodes = headers.map(h => <th style={extraStyles}>{h}</th>);
-  let rows = items.map(item => {
+  let rows = (reverse ? items.reverse() : items).map(item => {
     const nodes = headers.map(h => {
       const myId = id++;
 
@@ -136,38 +136,6 @@ export const TableFromItems = ({ items, headers }) => {
       </div>
     );
   }
-
-  const nodes = [
-    {
-      id: '0',
-      name: 'Shopping List',
-      deadline: new Date(2020, 1, 15),
-      type: 'TASK',
-      isComplete: true,
-      nodes: 3,
-    },
-  ];
-
-  const COLUMNS = [
-    { label: 'Task', renderCell: (item) => item.name },
-    {
-      label: 'Deadline',
-      renderCell: (item) =>
-      item.deadline.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-      }),
-    },
-    { label: 'Type', renderCell: (item) => item.type },
-    {
-      label: 'Complete',
-      renderCell: (item) => item.isComplete.toString(),
-    },
-    { label: 'Tasks', renderCell: (item) => item.nodes },
-  ];
-
-  const data = { nodes };
 
   return (
     <div>

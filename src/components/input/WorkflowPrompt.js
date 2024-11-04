@@ -1,75 +1,176 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { MdEdit } from 'react-icons/md';
 import { Loading } from '../common/Loading';
 import { Input } from '../input/Input';
 import { Textarea } from '../input/Textarea';
 import { Button } from '../input/Button';
 import { FaArrowRight } from 'react-icons/fa';
 import { useGlobalContext }  from '@/src/contexts/index.js';
+import { cleanWorkflow } from '@/src/lib/workflow.js';
+import { Workflow } from '@/src/components/workflow/Workflow.js';
 
-const UrlsInput = ({ value, onChange}) => {
+const UrlsInput = ({ currentUrl, value, onChange, disabled }) => {
+  const [editing, setEditing] = useState();
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (!currentUrl) return;
+    if (editing) return;
+    if (value == currentUrl) return;
+    onChange(currentUrl);
+  }, [currentUrl, editing]);
+
+  useEffect(() => {
+    if (editing && inputRef.current) {
+      inputRef.current.select();
+    }
+  }, [editing]);
+
+  if (!editing) {
+    return (
+      <div
+        style={{ display: 'flex',
+                 alignItems: 'center',
+                 color: '#555',
+                 paddingTop: 10,
+                 gap: 5,
+               }}
+        >
+        <div
+          style={{ marginLeft: 10,
+                   fontWeight: 'bold',
+                   fontSize: 12,
+                 }}
+          >
+          {value}
+        </div>
+        <MdEdit
+          size={14}
+          style={{ cursor: 'pointer' }}
+          onClick={() => setEditing(true)}
+        />
+      </div>
+    );
+  } else {
+  }
+
   return (
     <Input
-      label="Enter URL to scrape"
-      style={{ width: '100%' }}
+      ref={inputRef}
+      style={{ width: 'calc(100% - 8px)',
+               boxShadow: 'unset',
+               border: 0,
+               background: 'rgba(255,255,255,.5)',
+               margin: 4,
+             }}
       value={value}
-      onChange={onChange}
+      onChange={(e) => onChange(e.target.value)}
       placeholder="Enter URL to scrape, eg. https://example.com/page"
+      disabled={disabled}
     />
   );
 }
 
-export const WorkflowPrompt = ({ values, onChange, onWorkflow }) => {
+export const WorkflowPrompt = ({
+  currentUrl,
+  currentHtml,
+  values,
+  preview,
+  onChange,
+  onWorkflow,
+}) => {
   const { fox } = useGlobalContext();
-  const [loading, setLoading] = useState();
+  const [loading, setLoading] = useState({});
   const [disabled, setDisabled] = useState();
+  const [workflow, setWorkflow] = useState();
 
-  console.log('WorkflowPrompt fox', fox);
+  const handleContinue = () => {
+    onWorkflow(workflow);
+  }
 
-  const handleSubmit = async (e) => {
+  const handlePreview = async (e) => {
     e.preventDefault();
-    if (loading) return;
+    if (loading.preview) return;
     if (disabled) return;
-    setLoading(true);
+
+    setWorkflow(null);
+    setLoading({ preview: true });
     setDisabled(true);
-
-    // stuff
-    console.log('preview via fox 2', fox);
-    const p = await fox.plan(`${values.urls} ${values.prompt}`);
-    console.log('p', p);
-
-    setLoading(false);
+    const wf = await fox.plan(`${values.urls} ${values.prompt}`);
+    const clean = cleanWorkflow(wf);
+    console.log('got clean', clean);
+    setLoading({});
     setDisabled(false);
 
-    onWorkflow(p);
+    if (preview) {
+      setWorkflow(clean);
+    } else {
+      onWorkflow(clean);
+    }
   };
 
-  // const handleKeyDown = (e) => {
-  //   if (e.key == 'Enter' && !e.shiftKey) {
-  //     e.preventDefault();
-  //     handleSubmit(e);
-  //   } else {
-  //     console.log('handleKeyDown call onchange', e.target.value);
-  //     onChange(e);
-  //   }
-  // }
+  const continueNode = (
+    <div style={{ position: 'fixed',
+                  bottom: 0,
+                  left: 0,
+                  background: '#f3f3f3',
+                  width: '100vw',
+                  padding: 10,
+                }}>
+      <div style={{ display: 'flex',
+                    justifyContent: 'center',
+                    gap: 10,
+                    margin: '0 auto',
+                  }}>
+        <Button
+          large outline
+          style={{ width: '50%' }}
+          onClick={() => { setWorkflow(); setDisabled(false) }}
+          >
+          Start Over
+        </Button>
+        <Button
+          large
+          style={{ width: '50%' }}
+          onClick={handleContinue}
+          loading={loading?.continue}
+          >
+          Continue
+        </Button>
+      </div>
+    </div>
+  );
 
+  const borderRadius = 10;
+  
   return (
     <div
-      style={{ width: '100%',
-               display: 'flex',
-               flexDirection: 'column',
-               gap: 10
-             }}>
-      <UrlsInput
-        value={values.urls}
-        onChange={(e) => onChange({ ...values, urls: e.target.value })}
-      />
+      style={{ width: '100%' }}>
 
-      <form onSubmit={handleSubmit}>
+      {/*
+      <p>currentHtml:{(currentHtml || 'NONE').substr(0, 100)}</p>
+      */}
+
+      <form
+        style={{ display: 'flex',
+                 flexDirection: 'column',
+                 gap: 10,
+                 background: '#ddd',
+                 paddingTopx: 10,
+                 borderRadius,
+               }}
+        onSubmit={handlePreview}
+        >
+        <UrlsInput
+          currentUrl={currentUrl}
+          value={values.urls}
+          onChange={(val) => onChange({ ...values, urls: val })}
+          disabled={disabled}
+        />
         <div style={{ position: 'relative',
                       width: '100%',
-                      marginTop: 8,
-                      opacity: loading ? 0.5 : 1,
+                      marginTopx: 8,
+                      opacity: loading.preview ? 0.5 : 1,
                     }}>
           <div style={{ position: 'absolute',
                         right: 2,
@@ -83,8 +184,8 @@ export const WorkflowPrompt = ({ values, onChange, onWorkflow }) => {
                        padding: 0,
                        boxShadow: 'unset',
                      }}
-              loading={loading}
-              disabled={loading || disabled}
+              loading={loading.preview}
+              disabled={disabled}
               >
               <FaArrowRight size={14} />
             </Button>
@@ -98,16 +199,36 @@ export const WorkflowPrompt = ({ values, onChange, onWorkflow }) => {
                      padding: 8,
                      paddingLeft: 12,
                      paddingRight: 36,
-                     borderRadius: 18,
+                     borderRadius,
                      minHeight: 80,
+                     boxShadow: 'unset',
                    }}
             type="text"
+            disabled={disabled}
             value={values.prompt}
             onChange={(e) => onChange({ ...values, prompt: e.target.value })}
             placeholder={'Example: "Look for links to articles, and on each article page, find the author, the publication date, and summarize it in 2-10 words."'}
           />
         </div>
       </form>
+
+      <div style={{ marginTop: 20 }}>
+        {loading.preview && <p style={{ textAlign: 'center' }}>
+         The AI is generating your scrape plan. This may take a few moments...
+         </p>}
+
+         {workflow && <p style={{ textAlign: 'center' }}>
+          Review and edit the AI generated scrape plan below
+          </p>}
+         {workflow && <Workflow workflow={workflow} editable />}
+         {workflow && continueNode}
+      </div>
+
+      {/*
+      <pre>
+        {JSON.stringify(workflow, null, 2)}
+      </pre>
+      */}
     </div>
   );
 }

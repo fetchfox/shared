@@ -84,9 +84,12 @@
   box-shadow: 0px 0px var(--main-color-66);
 }
 
-.Button-small.Button-gray {
+.Button-small.Button-gray,
+.Button-small.Button-black
+{
   box-shadow: 2px 2px #ccc;
 }
+
 .Button.Button-small:active {
   transform: translate(2px, 2px);
   box-shadow: 0px 0px #ccc;
@@ -106,15 +109,20 @@
 }
 
 .Button-trans,
-.Button-gray.Button-trans {
+.Button-gray.Button-trans,
+.Button-black.Button-trans
+{
   background-color: transparent;
   color: var(--main-color);
   border: 0;
-  box-shadow: 0px 0px;
+  padding: 0;
+  box-shadow: unset;
 }
-
 .Button-gray.Button-trans {
   color: #888;
+}
+.Button-black.Button-trans {
+  color: #333;
 }
 
 .Button-trans:active,
