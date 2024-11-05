@@ -25,6 +25,12 @@ export const Select = ({ style, label, choices, value, onChange }) => {
 
   nodes.unshift(<option key="null" value=""></option>);
 
+  const decode = (val) => {
+    if (val == 'false') return false;
+    if (val == 'true') return true;
+    return val;
+  }
+
   return (
     <div>
       {label && <div style={{ fontSize: 14, fontWeight: 'bold', color: '#555' }}>{label}</div>}
@@ -37,7 +43,7 @@ export const Select = ({ style, label, choices, value, onChange }) => {
                  ...style, 
                }}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => onChange(decode(e.target.value))}
         >
         {nodes}
       </select>

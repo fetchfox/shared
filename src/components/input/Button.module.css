@@ -1,13 +1,3 @@
-:root {
-  --main-color: #df6546;
-  --main-color-ee: #df6546ee;
-  --main-color-66: #df654666;
-  --main-color-33: #df654633;
-
-  --ants-light: #A3C8FF;
-  --ants-dark: #3B7DF6;
-}
-
 .Button {
   display: flex;
   align-items: center;
@@ -17,7 +7,7 @@
   user-select: none;
   border: 0;
   text-decoration: none;
-  background-color: var(--main-color-ee);
+  background-color: #df6546ee;
   color: white;
   font-weight: bold;
   text-align: center;
@@ -26,10 +16,10 @@
   height: 32px;
   padding: 8px 16px;
   border-radius: 4px;
-  box-shadow: 3px 3px var(--main-color-66);
+  box-shadow: 3px 3px #df654666;
 }
 
-.Button.Button-simple {
+.ButtonSimple {
   box-shadow: unset;
   background: transparent;
   border: unset;
@@ -48,7 +38,7 @@
 
 .Button:active {
   transform: translate(2px, 2px);
-  box-shadow: 1px 1px var(--main-color-66);
+  box-shadow: 1px 1px #df654666;
 }
 
 .Button[disabled] {
@@ -57,83 +47,83 @@
 
 .Button[disabled]:hover {
   transform: unset;
-  box-shadow: 3px 3px var(--main-color-66);
+  box-shadow: 3px 3px #df654666;
 }
 
-.Button-outline {
+.ButtonOutline {
   background-color: white;
-  color: var(--main-color);
-  border: 1px solid var(--main-color);
+  color: #df6546;
+  border: 1px solid #df6546;
 }
 
-.Button-gray {
+.ButtonGray {
   background-color: white;
   color: #888;
   border: 1px solid #888;
   box-shadow: 3px 3px #ccc;
 }
 
-.Button-small {
+.ButtonSmall {
   font-size: 12px;
   height: 24px;
   padding: 4px 8px;
-  box-shadow: 2px 2px var(--main-color-66);
+  box-shadow: 2px 2px #df654666;
 }
-.Button.Button-small:active {
+.ButtonSmall:active {
   transform: translate(2px, 2px);
-  box-shadow: 0px 0px var(--main-color-66);
+  box-shadow: 0px 0px #df654666;
 }
 
-.Button-small.Button-gray,
-.Button-small.Button-black
+.ButtonSmall.ButtonGray,
+.ButtonSmall.ButtonBlack
 {
   box-shadow: 2px 2px #ccc;
 }
 
-.Button.Button-small:active {
+.Button.ButtonSmall:active {
   transform: translate(2px, 2px);
   box-shadow: 0px 0px #ccc;
 }
 
-.Button-white {
+.ButtonWhite {
   background-color: white;
-  color: var(--main-color);
+  color: #df6546;
   border: 0;
   box-shadow: 0px 0px;
 }
 
-.Button-white:active,
-.Button-small.Button-white:active {
+.ButtonWhite:active,
+.ButtonSmall.Button-white:active {
   transform: translate(0, 0);
   opacity: 0.5;
 }
 
-.Button-trans,
-.Button-gray.Button-trans,
-.Button-black.Button-trans
+.ButtonTrans,
+.ButtonGray.ButtonTrans,
+.ButtonBlack.ButtonTrans
 {
   background-color: transparent;
-  color: var(--main-color);
+  color: #df6546;
   border: 0;
   padding: 0;
   box-shadow: unset;
 }
-.Button-gray.Button-trans {
+.ButtonGray.ButtonTrans {
   color: #888;
 }
-.Button-black.Button-trans {
+.ButtonBlack.ButtonTrans {
   color: #333;
 }
 
-.Button-trans:active,
-.Button-small.Button-trans:active {
+.ButtonTrans:active,
+.ButtonSmall.ButtonTrans:active {
   transform: translate(0, 0);
   opacity: 0.5;
 }
 
-.Button-large {
+.ButtonLarge {
   font-size: 18px;
   height: 42px;
   padding: 10px 24px;
-  box-shadow: 3px 3px var(--main-color-66);
+  box-shadow: 3px 3px #df654666;
 }

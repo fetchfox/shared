@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaTrash } from 'react-icons/fa';
 import { Button } from '../input/Button.js';
-import './WorkflowList.css';
 
 export const WorkflowList = ({ workflows, limit, onOpen, onRemove }) => {
   const nodes = workflows
     .map(wf => (
       <div
-        className="active-fade"
         style={{ cursor: 'pointer',
                  borderTop: '1px solid #ccc',
                  padding: '5px',

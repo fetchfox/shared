@@ -1,10 +1,54 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './Table.css'
+import { IoMdCloseCircle } from 'react-icons/io';
+import { Button } from '../input/Button.js';
+import { Table } from './Table.js';
 
-export const TableFromItems = ({ items, headers, reverse }) => {
+const tdStyle = {
+  fontSize: 12,
+  border: '1px solid #ccc',
+  padding: 4,
+  textAlign: 'left',
+  tableLayout: 'fixed',
+};
+
+const Hover = ({ item, onClose }) => {
+  if (!item) return null;
+
+  return (
+    <div
+      style={{ position: 'sticky',
+               background: 'white',
+               border: '1px solid #ccc',
+               marginTop: 5,
+               padding: 5,
+               bottom: 64, // TODO: don't hardcode hack this
+               left: 0,
+               zIndex: 200,
+               width: '100%',
+               whiteSpace: 'nowrap',
+             }}
+      >
+      <div style={{ padding: 0 }}>
+        <Table
+          cellStyles={[{ width: 200 }]}
+          style={{ width: '100%', fontSize: 12 }}
+          rows={Object.keys(item).map(k => [
+                <b>{k}</b>,
+                item[k]
+                ])}
+        />
+
+        {/*item*/}
+
+      </div>
+    </div>
+  );
+}
+
+export const TableFromItems = ({ items, headers, reverse, hover }) => {
   const [mode, setMode] = useState('compact');
   const overflow = 10;
-  const [hoverId, setHoverId] = useState();
+  const [hoverIndex, setHoverIndex] = useState();
   const [limit, setLimit] = useState(overflow);
 
   let extraStyles;
@@ -41,78 +85,39 @@ export const TableFromItems = ({ items, headers, reverse }) => {
     return JSON.stringify(val);
   }
 
-  const enter = (id) => {
-    setHoverId(id);
+  const enter = (index) => {
+    console.log('enter', index);
+    setHoverIndex(index);
   }
 
-  const leave = (id) => {
-    setHoverId(null);
-  }
-
-  const hover = (val) => {
-    return (
-      <div style={{ position: 'relative' }}>
-        <div
-          className="text-break"
-          style={{ width: 200,
-                   maxHeight: 300,
-                   overflow: 'scroll',
-                   position: 'absolute',
-                   zIndex: 100,
-                   topx: 0,
-                   border: '1px solid #333',
-                   background: 'white',
-                 }}
-          >
-          {val}
-        </div>
-      </div>
-    );
+  const leave = (index) => {
   }
 
   let id = 1;
   const headerNodes = headers.map(h => <th style={extraStyles}>{h}</th>);
+  let index = 0;
   let rows = (reverse ? items.reverse() : items).map(item => {
-    const nodes = headers.map(h => {
-      const myId = id++;
-
-      return (
-        <td key={myId} className={className} style={{ maxWidth: 200 }}>
-          <div
-            style={{ cursor: 'default' }}
-            onMouseEnter={() => enter(myId)}
-            onMouseLeave={() => leave(myId)}
-            >
-            <div style={extraStyles}>{display(item[h])}</div>
-            {(hoverId == myId) && hover(item[h])}
-          </div>
-        </td>
-      )
-    });
-
-    return (
-      <tr>
-        {nodes}
-      </tr>
-    );
+    const myIndex = index++;
+    const style = {
+      whiteSpace: 'nowrap',
+    };
+    return headers.map(h => <div onMouseOver={() => enter(item)} style={style}>{display(item[h])}</div>);
   });
+
+  rows.unshift(headers.map(h => <b>{h}</b>));
 
   const overLimit = rows.length > limit;
   if (overLimit) {
     const more = rows.length - limit;
     rows = rows.slice(0, limit);
-    rows.push(
-      <tr>
-        <td colSpan={headers.length}>
-          <div
-            className="clickable"
-            onClick={() => setLimit(limit + more)}
-          >
-            Show {more} More...
-          </div>
-        </td>
-      </tr>
-    );
+    rows.push([
+      <div
+        style={{ cursor: 'pointer' }}
+        onClick={() => setLimit(limit + more)}
+        >
+        Show {more} more...
+      </div>
+    ]);
   }
 
   const didOverflow = rows.length > overflow + 1;
@@ -122,13 +127,15 @@ export const TableFromItems = ({ items, headers, reverse }) => {
       <div
         className="dense"
         style={{ position: 'sticky',
-                 bottom: 0,
-                 background: '#eee',
+                 bottom: 64,
+                 zIndex: 100,
+                 background: 'white',
+                 borderTop: '1px solid #ccc',
                  padding: 5,
                  textAlign: 'center'
                }}>
         <div
-          className="clickable"
+          style={{ cursor: 'pointer' }}
           onClick={() => setLimit(overflow)}
           >
           Show Less...
@@ -138,13 +145,24 @@ export const TableFromItems = ({ items, headers, reverse }) => {
   }
 
   return (
-    <div>
-      <div style={{ ...extraStyles, overflowX: 'scroll' }}>
-        <table className="dense">
-          <thead>{headerNodes}</thead>
-          <tbody>{rows}</tbody>
-        </table>
-      </div>
+    <div onMouseLeave={() => setHoverIndex(null)}>
+        <div style={{ overflowX: 'scroll' }}>
+          <Table
+            hoverCell
+            allCellStyle={{ maxWidth: 240 }}
+            style={{ width: '100%' }}
+            rows={rows} />
+        </div>
+
+        {overflowNode}
+
+        {hoverIndex !== undefined && 
+         <Hover
+         item={hoverIndex}
+         onClose={() => setHoverIndex(null)}
+         />
+         }
+
     </div>
   );
 }

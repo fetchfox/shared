@@ -15,3 +15,5 @@ export { useStepLibrary } from './state/workflow.js';
 export { generateApiKey } from './api/index.js';
 
 export { primaryColor } from './constants.js';
+
+export { Test } from './components/common/Test.js';

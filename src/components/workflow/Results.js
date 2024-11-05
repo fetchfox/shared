@@ -21,7 +21,8 @@ const prettyName = (name) => {
 
 const ItemsResult = ({ items }) => (
   <div>
-    <TableFromItems reverse items={items} />
+    <TableFromItems
+      items={items} />
   </div>
 );
 
@@ -79,7 +80,9 @@ export const Result = ({ index, result, last }) => {
   const borderRadius = 4;
   let borderStyles;
   let className;
-  if (result.loading) {
+
+  // TODO: Fix ants!!
+  if (false && result.loading) {
     className = 'ants';
     borderStyles = {
       padding: 9,
@@ -127,7 +130,7 @@ export const Result = ({ index, result, last }) => {
       <div
         className={className}
         style={{ fontSize: 14,
-                     ...borderStyles,
+                 ...borderStyles,
                }}>
         <div style={{ display: 'flex',
                       justifyContent: 'space-between',
@@ -176,6 +179,7 @@ export const Results = ({ results }) => {
   return (
     <div>
       {nodes}
+
       {/*
       <pre className="dense">{JSON.stringify(results, null, 2)}</pre>
       */}

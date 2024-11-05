@@ -50,6 +50,9 @@ export const GenericStepEdit = (props) => {
 
   const update = (key, value) => {
     const copy = { ...step_ };
+
+    console.log('==> update:', key, value);
+
     copy.args[key] = value;
     setStep_(copy);
   }

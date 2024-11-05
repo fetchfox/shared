@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Loading } from '@/src/components/common/Loading.js';
 import { primaryColor } from '@/src/constants.js';
 import { Tooltip } from 'react-tooltip';
-import './Button.css';
+import styles from './Button.module.css';
+// import './Button.css';
 
 export const Button = (props) => {
   const [width, setWidth] = useState(null);
@@ -21,30 +22,34 @@ export const Button = (props) => {
     extraStyles.cursor = 'default';
   }
 
-  let className = props.className === undefined ? 'Button' : 'Button ' + props.className;
+  let className = styles.Button;
+  if (props.className) {
+    className += ' ' + props.className;
+  }
+
   if (props.simple) {
-    className += ' Button-simple';
+    className += ' ' + styles.ButtonSimple;
   }
   if (props.small) {
-    className += ' Button-small';
+    className += ' ' + styles.ButtonSmall;
   }
   if (props.large) {
-    className += ' Button-large';
+    className += ' ' + styles.ButtonLarge;
   }
   if (props.gray) {
-    className += ' Button-gray';
+    className += ' ' + styles.ButtonGray;
   }
   if (props.black) {
-    className += ' Button-black';
+    className += ' ' + styles.ButtonBlack;
   }
   if (props.white) {
-    className += ' Button-white';
+    className += ' ' + styles.ButtonWhite;
   }
   if (props.outline) {
-    className += ' Button-outline';
+    className += ' ' + styles.ButtonOutline;
   }
   if (props.trans) {
-    className += ' Button-trans';
+    className += ' Trans ' + styles.ButtonTrans;
   }
 
   const buttonProps = {...props};

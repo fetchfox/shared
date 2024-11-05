@@ -18,6 +18,7 @@ import { useSpring, animated, easings } from '@react-spring/web';
 import { useGlobalContext }  from '@/src/contexts/index.js';
 
 import { TableFromItems } from '@/src/components/table/TableFromItems';
+import { Table } from '@/src/components/table/Table';
 import { Button } from '@/src/components/input/Button.js';
 import { Input } from '@/src/components/input/Input.js';
 import { ListInput } from '@/src/components/input/ListInput.js';
@@ -32,7 +33,6 @@ import { endpoint } from '@/src/utils.js';
 import { StepHeader } from './StepHeader.js';
 import { GenericStepEdit } from './GenericStepEdit.js';
 import { GlobalOptions } from './GlobalOptions.js';
-import './Workflow.css';
 
 const ConstStep = ({ step, onEdit, editable, prettyName }) => {
   const nodes = step.args.items.map(item => (
@@ -197,17 +197,18 @@ const GenericStep = ({ step, prettyName, editable, onEdit, onRemove }) => {
     const argDesc = desc.args[key];
     const arg = step.args[key];
 
+    if (!arg) return null;
+
     switch (argDesc.format) {
       case 'list':
         return <ul>{arg.map(x => <li>{x}</li>)}</ul>;
 
       case 'object':
         return (
-          <table>
-            <tbody>
-              {Object.keys(arg).map(k => <tr><th style={{ width: '10%' }}>{k}</th><td>{arg[k]}</td></tr>)}
-            </tbody>
-          </table>
+          <Table
+            cellStyles={[{ width: '10%' }]}
+            rows={Object.keys(arg).map(k => [<b>{k}</b>, arg[k]])}
+          />
         );
 
       case 'boolean':
@@ -223,12 +224,15 @@ const GenericStep = ({ step, prettyName, editable, onEdit, onRemove }) => {
     }
   }
 
-  const rows = keys.map(key => (
-    <tr>
-      <th style={{ width: '100px', whiteSpace: 'nowrap' }}>{key.upperFirst()}</th>
-      <td style={{ width: '100%' }}>{render(key)}</td>
-    </tr>
-  ));
+
+  const rows = keys.map(key => {
+    const display = render(key);
+    if (!display) return null;
+    return [
+      <b>{key.upperFirst()}</b>,
+      display
+    ];
+  });
 
   return (
     <div>
@@ -238,9 +242,17 @@ const GenericStep = ({ step, prettyName, editable, onEdit, onRemove }) => {
         onRemove={editable && onRemove}
       />
 
+      <Table
+        style={{ width: '100%' }}
+        cellStyles={[{ width: '10%' }]}
+        rows={rows}
+      />
+
+      {/*
       <table className="dense">
         <tbody>{rows}</tbody>
       </table>
+      */}
     </div>
   );
 }
@@ -389,9 +401,9 @@ export const Step = ({
             <IoArrowUndo style={{ marginTop: -2 }} size={14} /> Undo
           </Button>}
           {editable && <Button
-            simple gray
+            simple gray trans
             onClick={onAddStep}
-            tooltip="Add Step"
+            tooltip="Add Step 2"
             >
            <MdAddBox size={24} />
           </Button>}

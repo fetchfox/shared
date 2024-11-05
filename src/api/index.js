@@ -1,4 +1,4 @@
-import { endpoint } from '@/src/utils.js';
+import { endpoint } from '../utils.js';
 
 export const generateApiKey = async () => {
   const resp = await fetch(

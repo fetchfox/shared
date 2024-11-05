@@ -35,8 +35,7 @@ export const StepHeader = ({
           Cancel
         </Button>}
         {onRemove && <Button
-          className="xhover-control"
-          simple gray
+          simple gray trans
           onClick={onRemove}
           tooltip="Remove"
           >
@@ -50,8 +49,7 @@ export const StepHeader = ({
           Save
         </Button>}
         {onEdit && <Button
-          className="xhover-control"
-          simple gray
+          simple gray trans
           onClick={onEdit}
           tooltip="Edit"
           >
