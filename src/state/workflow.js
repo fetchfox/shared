@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { endpoint } from '@/src/utils.js';
+import { endpoint } from '../utils.js';
 
 export const useStepLibrary = () => {
   const [library, setLibrary] = useState();

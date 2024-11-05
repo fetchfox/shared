@@ -12,15 +12,15 @@ import {
   MdAddCircle,
   MdAddBox,
 } from 'react-icons/md';
-import { useGlobalContext }  from '@/src/contexts/index.js';
-import { TableFromItems } from '@/src/components/table/TableFromItems';
-import { Button } from '@/src/components/input/Button.js';
-import { Input } from '@/src/components/input/Input.js';
-import { ListInput } from '@/src/components/input/ListInput.js';
-import { DictInput } from '@/src/components/input/DictInput.js';
-import { Select } from '@/src/components/input/Select.js';
-import { Textarea } from '@/src/components/input/Textarea.js';
-import { Error } from '@/src/components/error/Error.js';
+import { useGlobalContext }  from '../../contexts/index.js';
+import { TableFromItems } from '../table/TableFromItems';
+import { Button } from '../input/Button.js';
+import { Input } from '../input/Input.js';
+import { ListInput } from '../input/ListInput.js';
+import { DictInput } from '../input/DictInput.js';
+import { Select } from '../input/Select.js';
+import { Textarea } from '../input/Textarea.js';
+import { Error } from '../error/Error.js';
 import { StepHeader } from './StepHeader.js';
 
 export const GenericStepEdit = (props) => {

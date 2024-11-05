@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import { useGlobalContext } from '../../contexts/index.js';
+import { Button } from '../input/Button.js';
 
 export const Test = () => {
+  const ctx = useGlobalContext();
+
+  console.log('test ctx', ctx);
 
   useEffect(() => {
     console.log('test12');
@@ -8,7 +13,8 @@ export const Test = () => {
 
   return (
     <div>
-      Test from shared
+      Test from shared 7
+      <Button>Test</Button>
     </div>
   );
 }

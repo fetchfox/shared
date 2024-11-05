@@ -10,6 +10,8 @@ export { Loading } from './components/common/Loading.js';
 
 export { GlobalContext, useGlobalContext } from './contexts/index.js';
 
+export { GlobalContextX, useGlobalContextX } from './contexts/index.js';
+
 export { useStepLibrary } from './state/workflow.js';
 
 export { generateApiKey } from './api/index.js';

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Check } from '@/src/components/input/Check.js';
-import { Input } from '@/src/components/input/Input.js';
+import { Check } from '../input/Check.js';
+import { Input } from '../input/Input.js';
 
 export const GlobalOptions = ({ workflow, onChange }) => {
   const [useLimit, setUseLimit] = useState();

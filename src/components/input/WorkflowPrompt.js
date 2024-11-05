@@ -5,9 +5,9 @@ import { Input } from '../input/Input';
 import { Textarea } from '../input/Textarea';
 import { Button } from '../input/Button';
 import { FaArrowRight } from 'react-icons/fa';
-import { useGlobalContext }  from '@/src/contexts/index.js';
-import { cleanWorkflow } from '@/src/lib/workflow.js';
-import { Workflow } from '@/src/components/workflow/Workflow.js';
+import { useGlobalContext }  from '../../contexts/index.js';
+import { cleanWorkflow } from '../../lib/workflow.js';
+import { Workflow } from '../workflow/Workflow.js';
 
 const UrlsInput = ({ currentUrl, value, onChange, disabled }) => {
   const [editing, setEditing] = useState();
@@ -82,6 +82,7 @@ export const WorkflowPrompt = ({
   const { fox } = useGlobalContext();
   const [loading, setLoading] = useState({});
   const [disabled, setDisabled] = useState();
+  const [editing, setEditing] = useState();
   const [workflow, setWorkflow] = useState();
 
   const handleContinue = () => {
@@ -132,12 +133,13 @@ export const WorkflowPrompt = ({
   };
 
   const continueNode = (
-    <div style={{ position: 'fixed',
+    <div style={{ position: 'sticky',
                   bottom: 0,
                   left: 0,
-                  background: '#f3f3f3',
-                  width: '100vw',
-                  padding: 10,
+                  background: 'white',
+                  width: 'calc(100% + 2px)',
+                  maxWidth: '100vw',
+                  padding: '10px 0',
                 }}>
       <div style={{ display: 'flex',
                     justifyContent: 'center',
@@ -156,8 +158,9 @@ export const WorkflowPrompt = ({
           style={{ width: '50%' }}
           onClick={handleContinue}
           loading={loading?.continue}
+          disabled={editing}
           >
-          Continue
+          {editing ? 'Editing...' : 'Continue'}
         </Button>
       </div>
     </div>
@@ -197,6 +200,7 @@ export const WorkflowPrompt = ({
           <div style={{ position: 'absolute',
                         right: 2,
                         bottom: 5,
+                        zIndex: 10,
                       }}>
             <Button
               type="submit"
@@ -224,6 +228,8 @@ export const WorkflowPrompt = ({
                      borderRadius,
                      minHeight: 80,
                      boxShadow: 'unset',
+                     position: 'relative',
+                     top: 4,
                    }}
             type="text"
             disabled={disabled}
@@ -243,7 +249,14 @@ export const WorkflowPrompt = ({
          {workflow && <p style={{ textAlign: 'center' }}>
           Review and edit the AI generated scrape plan below
           </p>}
-         {workflow && <Workflow workflow={workflow} editable />}
+          {workflow && (
+            <Workflow
+            editable
+            workflow={workflow}
+            onChange={setWorkflow}
+            onEditing={setEditing}
+            />
+          )}
          {workflow && continueNode}
       </div>
 

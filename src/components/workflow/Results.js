@@ -2,10 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { FaArrowAltCircleDown, FaDotCircle, FaCheckCircle } from 'react-icons/fa';
 import { MdError } from 'react-icons/md';
 import { Tooltip } from 'react-tooltip';
-import { Loading } from '@/src/components/common/Loading';
-import { Error } from '@/src/components/error/Error';
-import { TableFromItems } from '@/src/components/table/TableFromItems';
-import { primaryColor } from '@/src/constants';
+import { Loading } from '../common/Loading';
+import { Error } from '../error/Error';
+import { TableFromItems } from '../table/TableFromItems';
+import { primaryColor } from '../../constants';
 
 const prettyName = (name) => {
   const n = {

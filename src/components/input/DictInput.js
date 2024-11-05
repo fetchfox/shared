@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Input } from '@/src/components/input/Input';
+import { Input } from './Input.js';
 import {
   FiPlus,
   FiMinus,

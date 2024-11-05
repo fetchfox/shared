@@ -15,24 +15,25 @@ import {
 
 import { useSpring, animated, easings } from '@react-spring/web';
 
-import { useGlobalContext }  from '@/src/contexts/index.js';
+import { useGlobalContext }  from '../../contexts/index.js';
 
-import { TableFromItems } from '@/src/components/table/TableFromItems';
-import { Table } from '@/src/components/table/Table';
-import { Button } from '@/src/components/input/Button.js';
-import { Input } from '@/src/components/input/Input.js';
-import { ListInput } from '@/src/components/input/ListInput.js';
-import { DictInput } from '@/src/components/input/DictInput.js';
-import { Select } from '@/src/components/input/Select.js';
-import { Textarea } from '@/src/components/input/Textarea.js';
-import { Error } from '@/src/components/error/Error.js';
+import { TableFromItems } from '../table/TableFromItems';
+import { Table } from '../table/Table';
+import { Button } from '../input/Button.js';
+import { Input } from '../input/Input.js';
+import { ListInput } from '../input/ListInput.js';
+import { DictInput } from '../input/DictInput.js';
+import { Select } from '../input/Select.js';
+import { Textarea } from '../input/Textarea.js';
+import { Error } from '../error/Error.js';
 
-import { primaryColor } from '@/src/constants.js';
-import { endpoint } from '@/src/utils.js';
+import { primaryColor } from '../../constants.js';
+import { endpoint } from '../../utils.js';
 
 import { StepHeader } from './StepHeader.js';
 import { GenericStepEdit } from './GenericStepEdit.js';
 import { GlobalOptions } from './GlobalOptions.js';
+
 
 const ConstStep = ({ step, onEdit, editable, prettyName }) => {
   const nodes = step.args.items.map(item => (
