@@ -3,73 +3,94 @@ import { Loading } from '../common/Loading.js';
 import { primaryColor } from '../../constants.js';
 import { Tooltip } from 'react-tooltip';
 import styles from './Button.module.css';
-// import './Button.css';
 
 export const Button = (props) => {
   const [width, setWidth] = useState(null);
+  const [width_, setWidth_] = useState(null);
   const buttonRef = useRef(null);
 
+  const {
+    href,
+    simple,
+    small,
+    large,
+    gray,
+    black,
+    white,
+    outline,
+    trans,
+    loading,
+    disabled,
+    ...rest
+  } = props;
+
   useEffect(() => {
-    if (buttonRef.current) {
-      setWidth(buttonRef.current.offsetWidth);
+    if (!loading && buttonRef?.current?.offsetWidth) {
+      setWidth_(buttonRef?.current?.offsetWidth);
     }
-  }, [props.loading]);
+  }, [buttonRef?.current?.offsetWidth]);
+
+  // useEffect(() => {
+  //   if (buttonRef.current) {
+  //     setWidth(buttonRef.current.offsetWidth);
+  //   }
+  // }, [loading]);
 
   const extraStyles = {};
-  if (props.loading) {
-    extraStyles.width = width;
+  if (loading) {
+    extraStyles.width = width_;
     extraStyles.opacity = 1;
     extraStyles.cursor = 'default';
   }
 
   let className = styles.Button;
-  if (props.className) {
-    className += ' ' + props.className;
+
+  if (rest.className) {
+    delete rest.className;
+    className += ' ' + className;
   }
 
-  if (props.simple) {
+  if (simple) {
     className += ' ' + styles.ButtonSimple;
   }
-  if (props.small) {
+  if (small) {
     className += ' ' + styles.ButtonSmall;
   }
-  if (props.large) {
+  if (large) {
     className += ' ' + styles.ButtonLarge;
   }
-  if (props.gray) {
+  if (gray) {
     className += ' ' + styles.ButtonGray;
   }
-  if (props.black) {
+  if (black) {
     className += ' ' + styles.ButtonBlack;
   }
-  if (props.white) {
+  if (white) {
     className += ' ' + styles.ButtonWhite;
   }
-  if (props.outline) {
+  if (outline) {
     className += ' ' + styles.ButtonOutline;
   }
-  if (props.trans) {
-    className += ' Trans ' + styles.ButtonTrans;
+  if (trans) {
+    className += ' ' + styles.ButtonTrans;
   }
 
-  const buttonProps = {...props};
-  delete buttonProps.loading;
-
-  return (
+  let body = (
     <button
       ref={buttonRef}
       style={extraStyles}
-      {...props}
+      {...rest}
       className={className}
       data-tooltip-id="tooltip1"
       data-tooltip-content={props.tooltip}
+      disabled={!!props.disabled}
       >
 
       {!props.loading && props.children}
       {props.loading && (
-        <div style={{ marginTop: 1 }}>
+        <div style={{ position: 'relative', top: 2 }}>
         <Loading
-        size={props.small ? 18 : 14}
+        size={props.small ? 14 : 18}
         color="white"
         />
         </div>)
@@ -82,4 +103,10 @@ export const Button = (props) => {
          )}
     </button>
   );
+
+  if (href) {
+    body = <a href={href} style={{ textDecoration: 'none', ...rest.style }}>{body}</a>;
+  }
+
+  return body;
 }

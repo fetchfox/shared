@@ -4,23 +4,37 @@ import { Loading } from '../common/Loading';
 import { Input } from '../input/Input';
 import { Textarea } from '../input/Textarea';
 import { Button } from '../input/Button';
+import { Error } from '../error/Error';
 import { FaArrowRight } from 'react-icons/fa';
 import { useGlobalContext }  from '../../contexts/index.js';
 import { cleanWorkflow } from '../../lib/workflow.js';
 import { Workflow } from '../workflow/Workflow.js';
+import { FaCode } from 'react-icons/fa';
 
 const UrlsInput = ({ currentUrl, value, onChange, disabled }) => {
+  const [didInit, setDidInit] = useState();
   const [editing, setEditing] = useState();
   const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (didInit) return;
+    setEditing(!currentUrl);
+    setTimeout(
+      () => setDidInit(true),
+      50);
+  }, [currentUrl]);
 
   useEffect(() => {
     if (!currentUrl) return;
     if (editing) return;
     if (value == currentUrl) return;
+
     onChange(currentUrl);
   }, [currentUrl, editing]);
 
+
   useEffect(() => {
+    if (!didInit) return;
     if (editing && inputRef.current) {
       inputRef.current.select();
     }
@@ -40,6 +54,8 @@ const UrlsInput = ({ currentUrl, value, onChange, disabled }) => {
           style={{ marginLeft: 10,
                    fontWeight: 'bold',
                    fontSize: 12,
+                   wordBreak: 'break-all',
+                   overflowWrap: 'break-all',
                  }}
           >
           {value}
@@ -56,11 +72,12 @@ const UrlsInput = ({ currentUrl, value, onChange, disabled }) => {
 
   return (
     <Input
+      tabIndex="1"
       ref={inputRef}
       style={{ width: 'calc(100% - 8px)',
                boxShadow: 'unset',
                border: 0,
-               background: 'rgba(255,255,255,.5)',
+               background: 'white',
                margin: 4,
              }}
       value={value}
@@ -74,19 +91,48 @@ const UrlsInput = ({ currentUrl, value, onChange, disabled }) => {
 export const WorkflowPrompt = ({
   currentUrl,
   currentHtml,
+  baseWorkflow,
   values,
   preview,
+  onlyPreview,
   onChange,
   onWorkflow,
+  autoStart,
+  overrideControls,
 }) => {
   const { fox } = useGlobalContext();
   const [loading, setLoading] = useState({});
   const [disabled, setDisabled] = useState();
   const [editing, setEditing] = useState();
-  const [workflow, setWorkflow] = useState();
+  const [workflow, setWorkflow] = useState(baseWorkflow);
+  const [didAutoStart, setDidAutoStart] = useState();
+  const [editCode, setEditCode] = useState(false);
+  const [code, setCode] = useState('');
+  const [codeError, setCodeError] = useState();
 
-  const handleContinue = () => {
-    onWorkflow(workflow);
+  useEffect(() => {
+    if (didAutoStart) return;
+    if (!autoStart) return;
+    if (!fox) return;
+    handlePreview();
+    setDidAutoStart(true);
+  }, [autoStart]);
+
+  const handleContinue = async () => {
+    console.log('continue', workflow);
+
+    setLoading({ 'continue': true });
+    let data;
+    if (!workflow.name) {
+      console.log('call describe');
+      data = (await fox.load(workflow).describe()).dump();
+    } else {
+      data = workflow;
+    }
+
+    console.log('using data:', data);
+
+    onWorkflow(data);
   }
 
   const handleKeyDown = (e) => {
@@ -99,7 +145,7 @@ export const WorkflowPrompt = ({
   }
 
   const handlePreview = async (e) => {
-    e.preventDefault();
+    e && e.preventDefault();
     if (loading.preview) return;
     if (disabled) return;
 
@@ -115,15 +161,11 @@ export const WorkflowPrompt = ({
       url,
       html,
     });
-
-    console.log('got wf', wf);
+    await wf.describe();
+    console.log('wf:', wf);
 
     const clean = cleanWorkflow(wf);
     setLoading({});
-    setDisabled(false);
-
-    console.log('got wf', wf);
-    console.log('clean wf', clean);
 
     if (preview) {
       setWorkflow(clean);
@@ -132,15 +174,41 @@ export const WorkflowPrompt = ({
     }
   };
 
-  const continueNode = (
-    <div style={{ position: 'sticky',
-                  bottom: 0,
-                  left: 0,
-                  background: 'white',
-                  width: 'calc(100% + 2px)',
-                  maxWidth: '100vw',
-                  padding: '10px 0',
-                }}>
+  const handleCode = async () => {
+    setCodeError(null);
+    console.log('handlecode', code);
+
+    let data;
+    try {
+      data = JSON.parse(code);
+    } catch(e) {
+      setCodeError(`Invalid scraper JSON ${e}`);
+      return;
+    }
+
+    console.log('DATA', data)
+    console.log('fox', fox)
+
+    setLoading({ code: true });
+    const wf = await fox.load(data).describe();
+    setLoading({});
+
+    console.log('code wf', wf);
+    console.log('code wf dump', wf.dump());
+
+
+    if (preview) {
+      setWorkflow(wf.dump());
+    } else {
+      onWorkflow(wf.dump());
+    }
+  }
+
+  let controlsNode;
+  if (overrideControls) {
+    controlsNode = overrideControls;
+  } else {
+    controlsNode = (
       <div style={{ display: 'flex',
                     justifyContent: 'center',
                     gap: 10,
@@ -158,96 +226,148 @@ export const WorkflowPrompt = ({
           style={{ width: '50%' }}
           onClick={handleContinue}
           loading={loading?.continue}
-          disabled={editing}
+          disabled={editing || loading?.continue}
           >
           {editing ? 'Editing...' : 'Continue'}
         </Button>
       </div>
+    );
+  }
+
+  const borderRadius = 10;
+
+  const formNode = (
+    <form
+      style={{ display: 'flex',
+               flexDirection: 'column',
+               gap: 5,
+               background: '#ddd',
+               borderRadius,
+             }}
+      onSubmit={handlePreview}
+      >
+      <UrlsInput
+        currentUrl={currentUrl}
+        value={values.urls}
+        onChange={(val) => onChange({ ...values, urls: val })}
+        disabled={disabled}
+      />
+      <div style={{ position: 'relative',
+                    width: '100%',
+                    marginTopx: 8,
+                    opacity: loading.preview ? 0.5 : 1,
+                  }}>
+        <div style={{ position: 'absolute',
+                      right: 2,
+                      bottom: 5,
+                      zIndex: 10,
+                    }}>
+          {!disabled && <Button
+           tabIndex="3"
+           type="submit"
+           style={{ height: 30,
+                    width: 30,
+                    borderRadius: 15,
+                    padding: 0,
+                    boxShadow: 'unset',
+           }}
+           loading={loading.preview}
+           disabled={disabled}
+           >
+           <FaArrowRight size={14} />
+           </Button>}
+        </div>
+
+        <Textarea
+          tabIndex="2"
+          style={{ width: '100%',
+                   fontFamily: 'sans-serif',
+                   fontSize: 16,
+                   resize: 'none',
+                   padding: 8,
+                   paddingLeft: 12,
+                   paddingRight: 36,
+                   borderRadius,
+                   minHeight: 80,
+                   boxShadow: 'unset',
+                   position: 'relative',
+                   top: 4,
+                 }}
+          type="text"
+          disabled={disabled}
+          value={values.prompt}
+          onChange={(e) => onChange({ ...values, prompt: e.target.value })}
+          onKeyDown={handleKeyDown}
+          placeholder={'Example: "Look for links to articles, and on each article page, find the author, the publication date, and summarize it in 2-10 words."'}
+        />
+      </div>
+    </form>
+  );
+
+  const codeNode = (
+    <div style={{ background: '#ddd', borderRadius, padding: 10 }}>
+      <div><b>JSON Scraper Definition</b></div>
+      <div style={{ lineHeight: '20px' }}>Create a scraper using a JSON definition. For more information, see <a href="https://github.com/fetchfox/fetchfox">https://github.com/fetchfox/fetchfox</a></div>
+      <textarea
+        style={{ width: '100%',
+                 height: 200,
+                 border: '1px solid #ccc',
+                 borderRadius: 5,
+                 marginTop: 15,
+               }}
+        value={code}
+        onChange={(e) => setCode(e.target.value)}
+      />
+
+      <Error small message={codeError} />
+
+      {!workflow && <Button loading={loading.code} onClick={handleCode} style={{ width: '100%', marginTop: 15}}>
+        Continue
+      </Button>}
     </div>
   );
 
-  const borderRadius = 10;
+  const continueNode = (
+    <div style={{ position: 'sticky',
+                  bottom: 0,
+                  left: 0,
+                  background: 'white',
+                  width: 'calc(100% + 2px)',
+                  maxWidth: '100vw',
+                  padding: '10px 0',
+                  marginTop: 40,
+                }}>
+      {controlsNode}
+    </div>
+  );
   
   return (
-    <div
-      style={{ width: '100%' }}>
-
+    <div style={{ width: '100%' }}>
       {/*
       <p>currentHtml:{(currentHtml || 'NONE').substr(0, 100)}</p>
       */}
 
-      <form
-        style={{ display: 'flex',
-                 flexDirection: 'column',
-                 gap: 10,
-                 background: '#ddd',
-                 paddingTopx: 10,
-                 borderRadius,
-               }}
-        onSubmit={handlePreview}
-        >
-        <UrlsInput
-          currentUrl={currentUrl}
-          value={values.urls}
-          onChange={(val) => onChange({ ...values, urls: val })}
-          disabled={disabled}
+      {!onlyPreview && <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 10 }}>
+        <FaCode
+          style={{ cursor: 'pointer' }}
+          color={editCode ? '#333' : '#aaa'}
+          size={16}
+          onClick={() => setEditCode(!editCode)}
         />
-        <div style={{ position: 'relative',
-                      width: '100%',
-                      marginTopx: 8,
-                      opacity: loading.preview ? 0.5 : 1,
-                    }}>
-          <div style={{ position: 'absolute',
-                        right: 2,
-                        bottom: 5,
-                        zIndex: 10,
-                      }}>
-            <Button
-              type="submit"
-              style={{ height: 30,
-                       width: 30,
-                       borderRadius: 15,
-                       padding: 0,
-                       boxShadow: 'unset',
-                     }}
-              loading={loading.preview}
-              disabled={disabled}
-              >
-              <FaArrowRight size={14} />
-            </Button>
-          </div>
+      </div>}
 
-          <Textarea
-            style={{ width: '100%',
-                     fontFamily: 'sans-serif',
-                     fontSize: 16,
-                     resize: 'none',
-                     padding: 8,
-                     paddingLeft: 12,
-                     paddingRight: 36,
-                     borderRadius,
-                     minHeight: 80,
-                     boxShadow: 'unset',
-                     position: 'relative',
-                     top: 4,
-                   }}
-            type="text"
-            disabled={disabled}
-            value={values.prompt}
-            onChange={(e) => onChange({ ...values, prompt: e.target.value })}
-            onKeyDown={handleKeyDown}
-            placeholder={'Example: "Look for links to articles, and on each article page, find the author, the publication date, and summarize it in 2-10 words."'}
-          />
-        </div>
-      </form>
+      {!onlyPreview && editCode && codeNode}
+      {!onlyPreview && !editCode && formNode}
 
       <div style={{ marginTop: 20 }}>
         {loading.preview && <p style={{ textAlign: 'center' }}>
-         The AI is generating your scrape plan. This may take a few moments...
+          The AI is generating your scrape plan. This may take a few moments...<br/>
+          <br/>
+          <Loading />
          </p>}
 
          {workflow && <p style={{ textAlign: 'center' }}>
-          Review and edit the AI generated scrape plan below
+          Review and edit the scrape plan below
           </p>}
           {workflow && (
             <Workflow

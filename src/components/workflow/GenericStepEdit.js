@@ -6,6 +6,7 @@ import {
   FaTimesCircle,dit
 } from 'react-icons/fa';
 import { IoArrowUndo } from "react-icons/io5";
+import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
 import {
   MdCancel,
   MdEditSquare,
@@ -22,6 +23,8 @@ import { Select } from '../input/Select.js';
 import { Textarea } from '../input/Textarea.js';
 import { Error } from '../error/Error.js';
 import { StepHeader } from './StepHeader.js';
+import { camelToHuman } from '../../utils.js';
+import { fieldsMeta } from './Workflow.js';
 
 export const GenericStepEdit = (props) => {
   const {
@@ -50,9 +53,6 @@ export const GenericStepEdit = (props) => {
 
   const update = (key, value) => {
     const copy = { ...step_ };
-
-    console.log('==> update:', key, value);
-
     copy.args[key] = value;
     setStep_(copy);
   }
@@ -64,7 +64,7 @@ export const GenericStepEdit = (props) => {
     if (data?.errors) {
       setErrors(data?.errors);
     } else {
-      onDone();
+      await onDone();
     }
     setLoading(false);
   }
@@ -108,22 +108,28 @@ const GenericStepEditInner = ({
   onSave,
 }) => {
 
-  const keys = Object.keys(desc?.args || {});
+  const [showAdvanced, setShowAdvanced] = useState();
 
+  const meta = fieldsMeta[desc.name];
+  const keys = Object.keys(desc?.args || {});
   const stepArgs = step?.args || {};
 
-  const rows = keys.map(key => {
+  const renderField = (key) => {
     if (!desc) return null;
 
     // Handled globally, don't show it for individual steps
     if (key == 'limit') return null;
 
+    let isPrimary = meta?.primary == key;
+
     const argDesc = desc.args[key];
     let inputNode;
     switch (argDesc.format) {
       case 'list':
+      case 'array':
         inputNode = (
           <ListInput
+            key={key}
             style={{ width: '100%' }}
             value={stepArgs[key]}
             onChange={(val) => onChange(key, val)}
@@ -133,19 +139,19 @@ const GenericStepEditInner = ({
 
       case 'object':
         inputNode = (
-          <div>
-            <DictInput
-              style={{ width: '100%' }}
-              value={stepArgs && stepArgs[key]}
-              onChange={(val) => onChange(key, val)}
-            />
-          </div>
+          <DictInput
+            key={key}              
+            style={{ width: '100%' }}
+            value={stepArgs && stepArgs[key]}
+            onChange={(val) => onChange(key, val)}
+          />
         );
         break;
 
       case 'choices':
         inputNode = (
           <Select
+            key={key}              
             style={{ width: '100%' }}
             choices={argDesc.choices.map(x => [x])}
             value={stepArgs[key]}
@@ -157,6 +163,7 @@ const GenericStepEditInner = ({
       case 'boolean':
         inputNode = (
           <Select
+            key={key}              
             style={{ width: '100%' }}
             choices={[[true, 'yes'], [false, 'no']]}
             value={stepArgs[key]}
@@ -168,6 +175,7 @@ const GenericStepEditInner = ({
       default:
         inputNode = (
           <Input
+            key={key}              
             style={{ width: '100%' }}
             value={stepArgs[key]}
             onChange={(e) => onChange(key, e.target.value)}
@@ -178,16 +186,40 @@ const GenericStepEditInner = ({
 
     return (
       <tr>
-        <th style={{ width: '100px', whiteSpace: 'nowrap' }}>
-          {key.upperFirst()}
+        <th style={{ width: 120, whiteSpace: 'nowrap', fontSize: 14 }}>
+          {camelToHuman(key.upperFirst())}
         </th>
-        <td style={{ width: '100%', border: 0 }}>
+        <td
+          style={{
+                 width: '100%',
+                 border: '1px solid #ccc',
+                 }}
+          >
           {inputNode}
+          {/*JSON.stringify(desc.args[key])*/}
+          <div style={{ whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}>
+            {desc?.args && desc.args[key] && desc.args[key].description}
+          </div>
           <Error small message={errors && errors[key]} />
         </td>
       </tr>
     );
-  });
+  }
+
+  let basicKeys;
+  let advancedKeys;
+  if (meta?.basic) {
+    basicKeys = keys.filter(key => meta.basic[key]);
+    advancedKeys = keys.filter(key => !meta.basic[key]);
+  } else {
+    basicKeys = keys;
+    advancedKeys = [];
+  }
+  const basicRows = basicKeys.map(renderField);
+  const advancedRows = advancedKeys.map(renderField).filter(Boolean);
 
   return (
     <div>
@@ -197,11 +229,30 @@ const GenericStepEditInner = ({
         onDone={onDone}
         onSave={onSave}
       />
+
       <div>
-        <table>
-          <tbody>{rows}</tbody>
+        <table style={{ tableLayout: 'fixed' }}>
+          <tbody>{basicRows}</tbody>
         </table>
       </div>
+
+      {advancedRows.length > 0 && <div style={{ marginTop: 10 }}>
+        <div
+          style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+          onClick={() => setShowAdvanced(!showAdvanced)}
+          >
+          {!showAdvanced && <IoMdArrowDropright size={16} />}
+          {showAdvanced && <IoMdArrowDropdown size={16} />}
+          <div>
+            Advanced
+          </div>
+        </div>
+        <div style={{ display: (showAdvanced ? 'block' : 'none') }}>
+          <table style={{ tableLayout: 'fixed' }}>
+            <tbody>{advancedRows}</tbody>
+          </table>
+        </div>
+      </div>}
 
       {/*
       <pre>desc:{JSON.stringify(desc, null, 2)}</pre>

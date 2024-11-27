@@ -1,11 +1,26 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaArrowAltCircleDown, FaDotCircle, FaCheckCircle } from 'react-icons/fa';
+import {
+  FaArrowAltCircleDown,
+  FaDotCircle,
+  FaCheckCircle,
+  FaFileDownload,
+} from 'react-icons/fa';
+import { FaExpand } from 'react-icons/fa6';
+import { RiExpandWidthLine } from 'react-icons/ri';
+import {
+  PiArrowsOutLineHorizontalBold,
+  PiArrowsInLineHorizontalBold,
+} from 'react-icons/pi';
+import { BiCollapseHorizontal, BiExpandHorizontal } from 'react-icons/bi';
 import { MdError } from 'react-icons/md';
 import { Tooltip } from 'react-tooltip';
 import { Loading } from '../common/Loading';
 import { Error } from '../error/Error';
 import { TableFromItems } from '../table/TableFromItems';
+import { Modal } from '../modal/Modal';
+import { CsvButton } from '../csv/CsvButton';
 import { primaryColor } from '../../constants';
+import { useJob } from '../../state/job';
 
 const prettyName = (name) => {
   const n = {
@@ -19,53 +34,136 @@ const prettyName = (name) => {
   return name.upperFirst()
 }
 
+const FullResult = ({ result }) => {
+  const [showPrivate, setShowPrivate] = useState();
+
+  let hasPrivate = false;
+  for (const item of (result.items || [])) {
+    for (const key of Object.keys(item)) {
+      hasPrivate = hasPrivate || key.startsWith('_');
+    }
+  }
+
+  return (
+    <div style={{ fontWeight: 'normal' }}>
+      <div style={{ marginBottom: 10,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between' }}
+        >
+        <div>
+          {result.items.length} result{result.items.length == 1 ? '' : 's'}
+        </div>
+
+        {hasPrivate && showPrivate && <PiArrowsInLineHorizontalBold
+          size={20}
+          onClick={() => setShowPrivate(!showPrivate)}
+          style={{ cursor: 'pointer', color: '#333' }}
+        />}
+        {hasPrivate && !showPrivate &&<PiArrowsOutLineHorizontalBold
+          size={20}
+          onClick={() => setShowPrivate(!showPrivate)}
+          style={{ cursor: 'pointer', color: '#333' }}
+        />}
+      </div>
+      <TableFromItems
+        noOverflow
+        showPrivate={showPrivate}
+        style={{ background: '#fff' }}
+        allCellStyle={{ maxWidth: 600, padding: '2px 4px' }}
+        items={result.items} />
+    </div>
+  );
+}
+
 const ItemsResult = ({ items }) => (
   <div>
     <TableFromItems
+      style={{ background: '#fff' }}
+      items={items}
+      overflow={6}
+      clipMiddle
+    />
+  </div>
+);
+
+const ConstResult = ({ items }) => (
+  <div>
+    <TableFromItems
+      noHeader
+      style={{ background: '#fff' }}
       items={items} />
   </div>
 );
 
 const CrawlResult = ({ items }) => (
   <div>
-    <TableFromItems items={items.map(i => ({ url: i.url }))} />
+    <TableFromItems
+      noHeader
+      style={{ background: '#fff' }}
+      items={items.map(i => ({ url: i.url }))}
+      overflow={6}
+      clipMiddle
+    />
   </div>
 );
 
 const ResultHeader = ({ index, result }) => {
+  const title = `Results for ${prettyName(result.step.name)}`;
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 5, height: 24 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 5, height: 24, width: '100%' }}>
       <div style={{ marginTop: 5 }}>
         {result.loading && <Loading size={16} />}
         {result.done && !result.forcedDone && !result.error && <FaCheckCircle size={16} color="green" />}
         {result.forcedDone && !result.error && (
           <div>
-          <FaDotCircle
-          size={16}
-          color="#ffc107"
-          data-tooltip-id={`forcedDone-${index}`}
-          data-tooltip-content="Stopped before completion"
-          
-          />
-          <Tooltip id={`forcedDone-${index}`} place="bottom-end" />
+            <FaDotCircle
+              size={16}
+              color="#ffc107"
+              data-tooltip-id={`forcedDone-${index}`}
+              data-tooltip-content="Stopped before completion"
+            />
+            <Tooltip id={`forcedDone-${index}`} place="bottom-end" />
           </div>
          )}
         {result.done && result.error && <MdError size={16} color="red" />}
       </div>
-      <div>
-        {prettyName(result.step.name)}
+      <div style={{ width: '100%' }}>
+        {title} ({ result.items?.length })
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+        <CsvButton items={result.items}>
+          <FaFileDownload
+            style={{ cursor: 'pointer', color: '#777' }}
+            data-tooltip-id={`csv-${index}`}
+            data-tooltip-content={`Download CSV of Step ${index + 1}`}
+          />
+        </CsvButton>
+
+        <Modal title={title}>
+          <FaExpand
+            style={{ cursor: 'pointer', color: '#777' }}
+            data-tooltip-id={`full-${index}`}
+            data-tooltip-content={`Expand Step ${index + 1}`}
+          />
+          <FullResult result={result} />
+        </Modal>
+
+        <Tooltip id={`csv-${index}`} place="bottom-end" style={{ zIndex: 1000 }} />
+        <Tooltip id={`full-${index}`} place="bottom-end" style={{ zIndex: 1000 }} />
       </div>
     </div>
   );
 }
 
-export const Result = ({ index, result, last }) => {
+export const Result = ({ index, result, last, inner }) => {
   const { step, items } = result;
   if (!items) return null;
 
-  const prettyName = <ResultHeader index={index} result={result} />;
+  const prettyName = (false && inner) ? null : <ResultHeader index={index} result={result} />;
 
   let node = {
+    'const': <ConstResult items={items} />,
     'crawl': <CrawlResult items={items} />,
   }[step.name];
 
@@ -92,10 +190,13 @@ export const Result = ({ index, result, last }) => {
     className = '';
     borderStyles = {
       padding: 10,
-      background: 'white',
+      backgroundx: 'white',
       border: '1px solid #ccc',
       boxShadow: `2px 2px #eee`,
       borderRadius,
+      ...(inner ? {
+        padding: 0, border: 0, boxShadow: 0
+      } : {})
     };
   }
 
@@ -146,7 +247,7 @@ export const Result = ({ index, result, last }) => {
       </div>
 
 
-      {!last && (
+      {!last && !inner && (
         <div style={{ padding: 10,
                       width: '100%',
                       textAlign: 'center',
@@ -162,7 +263,7 @@ export const Result = ({ index, result, last }) => {
   );
 }
 
-export const Results = ({ results }) => {
+const Inner = ({ results }) => {
   // const resultsWithItems = results.filter(x => x.items && x.items.length > 0);
   const resultsWithItems = results;
 
@@ -182,6 +283,38 @@ export const Results = ({ results }) => {
 
       {/*
       <pre className="dense">{JSON.stringify(results, null, 2)}</pre>
+      */}
+    </div>
+  );
+}
+
+export const Results = ({ jobId }) => {
+  const [starting, setStarting] = useState();
+  const results = useJob(jobId);
+
+  useEffect(() => {
+    if (!jobId) {
+      setStarting(false);
+      return;
+    }
+    if (jobId && (results?.full || []).length > 0) {
+      setStarting(false);
+      return;
+    }
+
+    setStarting(true);
+  }, [jobId, results]);
+
+  return (
+    <div>
+      {starting && <Loading>Starting your scraper...</Loading>}
+      {results?.full && <Inner results={results.full} />}
+
+      {/*
+      JOBID:{JSON.stringify(jobId)} <br />
+      RESULTS:
+      <pre>{JSON.stringify(results, null, 2)}</pre>
+      --
       */}
     </div>
   );

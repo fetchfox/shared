@@ -4,6 +4,7 @@ import {
   FaCheckCircle,
   FaEdit,
   FaTimesCircle,
+  FaCode,
 } from 'react-icons/fa';
 import { IoArrowUndo } from "react-icons/io5";
 import {
@@ -12,6 +13,7 @@ import {
   MdAddCircle,
   MdAddBox,
 } from 'react-icons/md';
+import { PiCodeFill } from 'react-icons/pi';
 
 import { useSpring, animated, easings } from '@react-spring/web';
 
@@ -25,14 +27,41 @@ import { ListInput } from '../input/ListInput.js';
 import { DictInput } from '../input/DictInput.js';
 import { Select } from '../input/Select.js';
 import { Textarea } from '../input/Textarea.js';
+import { Modal } from '../modal/Modal.js';
 import { Error } from '../error/Error.js';
 
-import { primaryColor } from '../../constants.js';
-import { endpoint } from '../../utils.js';
+import { primaryColor, primaryColorDark } from '../../constants.js';
+import { endpoint, camelToHuman } from '../../utils.js';
 
 import { StepHeader } from './StepHeader.js';
 import { GenericStepEdit } from './GenericStepEdit.js';
+import { Result } from './Results.js';
 import { GlobalOptions } from './GlobalOptions.js';
+
+
+export const fieldsMeta = {
+  crawl: {
+    primary: 'query',
+    basic: { query: true },
+  },
+  fetch: {
+    basic: {
+      urlFields: true,
+    }    
+  },
+  extract: {
+    primary: 'questions',
+    basic: {
+      questions: true,
+      single: true,
+    },
+  },
+  filter: {
+    basic: {
+      query: true,
+    }
+  }
+};
 
 
 const ConstStep = ({ step, onEdit, editable, prettyName }) => {
@@ -44,7 +73,11 @@ const ConstStep = ({ step, onEdit, editable, prettyName }) => {
       <StepHeader
         onEdit={editable && onEdit}
         prettyName="Starting URLs" />
-      {nodes}
+      <TableFromItems
+        style={{ background: '#fff' }}
+        noHeader
+        items={step.args.items}
+      />
     </div>
   );
 }
@@ -126,8 +159,16 @@ const NewStep = ({ onChange, onCancel }) => {
 
   const { library } = useGlobalContext();
 
+  const allowed = {
+    crawl: 'Find more urls',
+    extract: 'Get data from a page',
+    filter: 'Filter the results',
+    limit: 'Limit the number of results',
+    unique: 'Keep only unique items based on a field',
+  };
+
   const nodes = Object.keys(library)
-    .filter(key => key != 'const')
+    .filter(key => allowed[key])
     .map((key) => (
       <div
         style={{ background: '#fff',
@@ -145,20 +186,23 @@ const NewStep = ({ onChange, onCancel }) => {
                    lineHeight: '16px',
                  }}
           >
-          {library[key].name.upperFirst()}
+          {camelToHuman(library[key].name)}
         </div>
         <div
           style={{ lineHeight: '18px',
                    fontSize: 12,
                    marginTop: 5,
                  }}>
-          {library[key].description}
+          {allowed[key]}
         </div>
       </div>
     ));
 
   return (
-    <animated.div style={{ transformOrigin: 'top center', ...springs }}>
+    <animated.div
+      style={{ transformOrigin: 'top center',
+               ...springs }}
+      >
       <div style={{ display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
@@ -200,15 +244,18 @@ const GenericStep = ({ step, prettyName, editable, onEdit, onRemove }) => {
 
     if (!arg) return null;
 
+    console.log('render generic step', key, argDesc, step);
+
     switch (argDesc.format) {
       case 'list':
+      case 'array':
         return <ul>{arg.map(x => <li>{x}</li>)}</ul>;
 
       case 'object':
         return (
           <Table
             cellStyles={[{ width: '10%' }]}
-            rows={Object.keys(arg).map(k => [<b>{k}</b>, arg[k]])}
+            rows={Object.keys(arg).map(k => [<b>{camelToHuman(k)}</b>, ''+arg[k]])}
           />
         );
 
@@ -230,7 +277,7 @@ const GenericStep = ({ step, prettyName, editable, onEdit, onRemove }) => {
     const display = render(key);
     if (!display) return null;
     return [
-      <b>{key.upperFirst()}</b>,
+      <b style={{ whiteSpace: 'nowrap', width: 100, display: 'inline-block' }}>{camelToHuman(key)}</b>,
       display
     ];
   });
@@ -243,17 +290,14 @@ const GenericStep = ({ step, prettyName, editable, onEdit, onRemove }) => {
         onRemove={editable && onRemove}
       />
 
-      <Table
-        style={{ width: '100%' }}
-        cellStyles={[{ width: '10%' }]}
-        rows={rows}
-      />
+      <div style={{ background: '#fff' }}>
+        <Table
+          style={{ width: '100%' }}
+          cellStyles={[{ width: '10%' }]}
+          rows={rows}
+        />
+      </div>
 
-      {/*
-      <table className="dense">
-        <tbody>{rows}</tbody>
-      </table>
-      */}
     </div>
   );
 }
@@ -261,6 +305,7 @@ const GenericStep = ({ step, prettyName, editable, onEdit, onRemove }) => {
 export const Step = ({
   index,
   step,
+  result,
   last,
   editable,
   workflow,
@@ -277,7 +322,7 @@ export const Step = ({
   const [editing, setEditing] = useState();
 
   useEffect(() => {
-    onEditing(editing);
+    onEditing && onEditing(editing);
   }, [editing]);
 
   useEffect(() => {
@@ -319,7 +364,7 @@ export const Step = ({
       extract: 'Extract data',
     }[step.name];
     if (!prettyName) {
-      prettyName = `${step.name.replace(/-/g, ' ').upperFirst()}`;
+      prettyName = `${camelToHuman(step.name.replace(/-/g, ' '))}`;
     }
 
     const childProps = {
@@ -370,74 +415,123 @@ export const Step = ({
     editNode = pair[1];
   }
 
+  let resultBg = result?.items ? '#eee' : 'transparent';
+
+  let resultNode;
+  if (result) {
+    resultNode = (
+      <div
+        style={{ width: '50%',
+                 padding: 10,
+                 border: '1px solid #ccc',
+                 background: '#eee',
+                 borderRadius: 8,
+               }}
+        >
+        <Result index={index} result={result} inner />
+      </div>
+    );
+  }
+
   return (
-    <div className="Step">
-      <div style={{ border: '1px solid #ccc',
-                    background: '#fff',
-                    boxShadow: `2px 2px #ddd`,
-                    borderRadius: 4,
-                    padding: 10,
-                    fontSize: 14,
-                  }}>
-        {!editing && node}
-        {editing && editNode}
+    <div>
+      <div
+        style={{ display: 'flex',
+                 width: '100%',
+                 borderRadius: 8,
+                 gap: 20,
+               }}
+        >
+        <div style={{ border: '1px solid #ccc',
+                      background: 'white',
+                      boxShadow: `2px 2px #eee`,
+                      borderRadius: 8,
+                      padding: 10,
+                      fontSize: 14,
+                      width: result ? '50%' : '100%',
+                      height_x: '1%',
+                    }}>
+          {!editing && node}
+          {editing && editNode}
+        </div>
+        {resultNode}
       </div>
 
       <div style={{ position: 'relative' }}>
         <div style={{ position: 'absolute',
-                      right: 0,
+                      right: result ? 'calc(50vw - 12px)' : 0,
                       height: 46,
                       display: 'flex',
                       alignItems: 'center',
                       marginRight: 0,
-                      padding: '0 10px',
-                      width: '100%',
+                      padding: 0,
+                      width: result ? '50%' : '100%',
                       justifyContent: last ? 'center' : 'flex-end',
                     }}>
           {onUndo && <Button
            className="bt bt-white bt-sm"
              small trans
-            onClick={onUndo}
+             onClick={onUndo}
             >
             <IoArrowUndo style={{ marginTop: -2 }} size={14} /> Undo
           </Button>}
           {editable && <Button
             simple gray trans
             onClick={onAddStep}
-            tooltip="Add Step 2"
+            tooltip="Add Step"
             >
            <MdAddBox size={24} />
           </Button>}
         </div>
-      {!last && (
-        <div style={{ padding: 10,
-                      width: '100%',
-                      textAlign: 'center',
-                      color: primaryColor,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-        }}>
-        <FaArrowAltCircleDown size={24} />
-        </div>
-       )}
+        {!last && (
+          <div style={{ padding: 10,
+                        width: result ? '50%' : '100%',
+                        textAlign: 'center',
+                        color: primaryColor,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+          }}>
+            <FaArrowAltCircleDown size={24} />
+          </div>
+         )}
+
+        {/*
+        <pre>{JSON.stringify(result, null, 2)}</pre>
+        */}
       </div>
     </div>
   );
 }
 
-export const Workflow = ({ workflow, editable, onChange, onEditing }) => {
+export const Workflow = ({ workflow, results, editable, onChange, onEditing }) => {
   const { library } = useGlobalContext();
   const pairs = [];
-  const steps = workflow?.steps || [];
+  const [steps, setSteps] = useState([]);
   const [undoData, setUndoData] = useState();
+  const [editing, setEditing] = useState();
+
+  useEffect(() => {
+    if (!workflow?.steps) return;
+    setSteps(workflow.steps);
+  }, [workflow?.steps]);
+
+  const handleEditing = (editing_) => {
+    setEditing(editing_);
+    onEditing && onEditing(editing_);
+  }
 
   const handleSubmit = async (index, step) => {
-    const copy = JSON.parse(JSON.stringify(workflow));
-    copy.steps[index] = step;
+    const copySteps = JSON.parse(JSON.stringify(steps));
+    copySteps[index] = step;
 
+    const copy = JSON.parse(JSON.stringify(workflow));
+    copy.steps = copySteps;
+
+    const url = endpoint(`/api/workflow/validate`);
+    console.log('validate url', url);
     const resp = await fetch(
-      endpoint(`/api/workflow/validate`),
+      url,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -449,15 +543,13 @@ export const Workflow = ({ workflow, editable, onChange, onEditing }) => {
       return { errors: data.errors[index] };
     }
 
-    console.log('ONCHANGE', copy);
-
-    onChange(copy);
+    return onChange(copy);
   }
 
   const addStep = async (step, index) => {
     const copy = JSON.parse(JSON.stringify(workflow));
     copy.steps.splice(index, 0, step);
-    onChange(copy);
+    setSteps(copy.steps);
   }
 
   const undo = () => {
@@ -472,56 +564,63 @@ export const Workflow = ({ workflow, editable, onChange, onEditing }) => {
       s.args[key] = desc.args[key].default || null;
     }
 
-    const copy = JSON.parse(JSON.stringify(workflow));
-    copy.steps[index] = s;
-    onChange(copy);
+    const copySteps = JSON.parse(JSON.stringify(steps));
+    copySteps[index] = s;
+    setSteps(copySteps);
   }
 
   const removeStep = async (index) => {
-    const copy = JSON.parse(JSON.stringify(workflow));
-    const removed = JSON.parse(JSON.stringify(copy.steps[index]));
-    copy.steps.splice(index, 1);
+    const copy = JSON.parse(JSON.stringify(steps));
+    const removed = JSON.parse(JSON.stringify(steps[index]));
+    copy.splice(index, 1);
+    setSteps(copy);
 
-    onChange(copy);
+    if (removed.name != 'new') {
+      const copyWorkflow = JSON.parse(JSON.stringify(workflow));
+      copyWorkflow.steps = copy;
+      onChange(copyWorkflow);
+    }
 
     setUndoData({ step: removed, index });
     setTimeout(() => setUndoData(null), 4000);
   }
 
-  // TODO
-  const results = [];
+  // const results = [];
 
   let resultsWithItems = [];
   if (results && Array.isArray(results)) {
     resultsWithItems = results;
-      // .filter(x => (
-      //   x.error ||
-      //   x.didStart ||
-      //   x.items && x.items.length > 0
-      // ));
   }
 
-  // Special case to show loading if:
-  // - Last step in resultsWithItems is `done`
-  // - The next item does not have `didStart` set
-  if (
-    resultsWithItems &&
-    results &&
-    resultsWithItems.length > 0 &&
-    resultsWithItems.length < results.length &&
-    resultsWithItems[resultsWithItems.length - 1].done)
-  {
-    // Deep copy and set it to `loading`
-    resultsWithItems.push(JSON.parse(JSON.stringify(
-      results[resultsWithItems.length]
-    )));
-    resultsWithItems[resultsWithItems.length - 1].loading = true;
-  }
+  // // Special case to show loading if:
+  // // - Last step in resultsWithItems is `done`
+  // // - The next item does not have `didStart` set
+  // if (
+  //   resultsWithItems &&
+  //   results &&
+  //   resultsWithItems.length > 0 &&
+  //   resultsWithItems.length < results.length &&
+  //   resultsWithItems[resultsWithItems.length - 1].done)
+  // {
+  //   // Deep copy and set it to `loading`
+  //   resultsWithItems.push(JSON.parse(JSON.stringify(
+  //     results[resultsWithItems.length]
+  //   )));
+  //   resultsWithItems[resultsWithItems.length - 1].loading = true;
+  // }
 
   for (let i = 0; i < steps.length; i++) {
+    let result;
+    if (results) {
+      if (i >= results.length){
+        result = {};
+      } else {
+        result = results[i];
+      }
+    }
     pairs.push({
       step: steps[i],
-      result: i >= (resultsWithItems || []).length ? {} : resultsWithItems[i],
+      result,
     });
   }
 
@@ -530,32 +629,47 @@ export const Workflow = ({ workflow, editable, onChange, onEditing }) => {
     const index = i++;
 
     const props = {
-      key: index,
       index: index,
-      last: index == workflow?.steps.length - 1,
+      last: index == steps.length - 1,
       lastResult: index == resultsWithItems.length - 1,
-      editable,
+      editable: !editing,
       step: pair.step,
       result: pair.result,
       workflow: workflow,
       workflowId: workflow.id,
-      onEditing,
+      onEditing: handleEditing,
       onSubmit: (val) => handleSubmit(index, val),
       onAddStep: () => addStep({ name: 'new', args: {} }, index + 1),
       onSetStepWithName: (name, index) => setStepWithName(name, index),
       onRemove: () => { removeStep(index) },
-      onUndo: undoData?.index == index + 1 ? undo : null,
+      onUndo_disabled: undoData?.index == index + 1 ? undo : null,
     };
 
-    return <Step {...props} />;
+    return <Step key={pair.step.name + '-' + index} {...props} />;
   });
 
   return (
     <div>
-      <GlobalOptions
-        workflow={workflow}
-        onChange={onChange}
-      />
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <GlobalOptions
+          workflow={workflow}
+          onChange={onChange}
+        />
+
+        <Modal title="Scraper JSON">
+          <FaCode color="#888" size={16} />
+          <div style={{ maxWidth: 500 }}>
+            <p>JSON definition of this scrape job is below. Visit our GitHub for more information on running using code: <a href="https://github.com/fetchfox/fetchfox" target="_blank">https://github.com/fetchfox/fetchfox</a></p>
+            <br />
+            <textarea
+              rows={16}
+              style={{ width: '100%', fontSize: 12, border: '1px solid #ccc' }}
+              value={JSON.stringify({ steps: workflow?.steps, options: workflow?.options }, null, 2)}
+            />
+          </div>
+        </Modal>
+      </div>
+
       {/*
       <pre>{JSON.stringify(workflow, null, 2)}</pre>
       */}

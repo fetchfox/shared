@@ -11,6 +11,7 @@ export const Check = forwardRef((props, ref) => {
         type="checkbox"
         checked={value}
         ref={ref}
+        readOnly
         style={{ ...style }}
       />
       {children}

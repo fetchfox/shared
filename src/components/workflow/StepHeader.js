@@ -19,6 +19,7 @@ export const StepHeader = ({
     <div style={{ display: 'flex',
                   justifyContent: 'space-between',
                   fontSize: 14,
+                  height: 24,
                   fontWeight: 'bold',
                   marginBottom: 5,
                 }}

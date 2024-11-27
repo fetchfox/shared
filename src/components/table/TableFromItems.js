@@ -3,14 +3,6 @@ import { IoMdCloseCircle } from 'react-icons/io';
 import { Button } from '../input/Button.js';
 import { Table } from './Table.js';
 
-const tdStyle = {
-  fontSize: 12,
-  border: '1px solid #ccc',
-  padding: 4,
-  textAlign: 'left',
-  tableLayout: 'fixed',
-};
-
 const Hover = ({ item, onClose }) => {
   if (!item) return null;
 
@@ -45,9 +37,23 @@ const Hover = ({ item, onClose }) => {
   );
 }
 
-export const TableFromItems = ({ items, headers, reverse, hover }) => {
+export const TableFromItems = ({
+  items,
+  headers,
+  reverse,
+  hover,
+  noHeader,
+  overflow,
+  noOverflow,
+  clipMiddle,
+  style,
+  allCellStyle,
+  showPrivate,
+}) =>
+{
+
   const [mode, setMode] = useState('compact');
-  const overflow = 10;
+  if (!overflow) overflow = items.length + 10;
   const [hoverIndex, setHoverIndex] = useState();
   const [limit, setLimit] = useState(overflow);
 
@@ -55,7 +61,7 @@ export const TableFromItems = ({ items, headers, reverse, hover }) => {
   let className;
   if (mode == 'compact') {
     extraStyles = {
-      whiteSpace: 'nowrap',
+      whiteSpacex: 'nowrap',
       overflowX: 'hidden',
     };
     className = '';
@@ -80,6 +86,8 @@ export const TableFromItems = ({ items, headers, reverse, hover }) => {
     }
   }
 
+  headers = headers.filter(h => showPrivate || !h.startsWith('_'));
+
   const display = (val) => {
     if (typeof val == 'string') return val;
     return JSON.stringify(val);
@@ -94,7 +102,6 @@ export const TableFromItems = ({ items, headers, reverse, hover }) => {
   }
 
   let id = 1;
-  const headerNodes = headers.map(h => <th style={extraStyles}>{h}</th>);
   let index = 0;
   let rows = (reverse ? items.reverse() : items).map(item => {
     const myIndex = index++;
@@ -104,20 +111,38 @@ export const TableFromItems = ({ items, headers, reverse, hover }) => {
     return headers.map(h => <div onMouseOver={() => enter(item)} style={style}>{display(item[h])}</div>);
   });
 
-  rows.unshift(headers.map(h => <b>{h}</b>));
+  if (!noHeader) {
+    rows.unshift(headers.map(h => <b>{h}</b>));
+  }
 
   const overLimit = rows.length > limit;
   if (overLimit) {
-    const more = rows.length - limit;
-    rows = rows.slice(0, limit);
-    rows.push([
-      <div
-        style={{ cursor: 'pointer' }}
-        onClick={() => setLimit(limit + more)}
-        >
-        Show {more} more...
-      </div>
-    ]);
+    if (clipMiddle) {
+      const top = Math.floor(overflow / 2);
+      const bottom = Math.ceil(overflow / 2);
+
+      const topRows = rows.slice(0, top);
+      const bottomRows = rows.slice(rows.length - bottom, rows.length);
+
+      const more = rows.length - top - bottom;
+
+      rows = [
+        ...topRows,
+        [<div style={{}}>{more} more...</div>],
+        ...bottomRows,
+      ];
+    } else {
+      const more = rows.length - limit;
+      rows = rows.slice(0, limit);
+      rows.push([
+        <div
+          style={{ cursor: 'pointer' }}
+          onClick={() => setLimit(limit + more)}
+          >
+          Show {more} more...
+        </div>
+      ]);
+    }
   }
 
   const didOverflow = rows.length > overflow + 1;
@@ -149,20 +174,18 @@ export const TableFromItems = ({ items, headers, reverse, hover }) => {
         <div style={{ overflowX: 'scroll' }}>
           <Table
             hoverCell
-            allCellStyle={{ maxWidth: 240 }}
-            style={{ width: '100%' }}
+            allCellStyle={{ maxWidth: 240, padding: '2px 4px', ...(allCellStyle || {}) }}
+            style={{ width: '100%', ...style }}
             rows={rows} />
         </div>
 
         {overflowNode}
 
-        {hoverIndex !== undefined && 
+        {hover && hoverIndex !== undefined && 
          <Hover
          item={hoverIndex}
          onClose={() => setHoverIndex(null)}
-         />
-         }
-
+         />}
     </div>
   );
 }

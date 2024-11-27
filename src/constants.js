@@ -3,6 +3,8 @@ export const startUrl = 'https://ortutay.substack.com/p/im-making-an-ai-powered-
 export const docsUrl = 'https://docs.fetchfoxai.com'
 export const xUrl = 'https://x.com/FetchFoxAI';
 export const discordUrl = 'https://discord.gg/mM54bwdu59';
-export const primaryColor = '#df6546';
+export const primaryColor = '#FD953A';
+export const primaryColorDark = '#EC6105';
 
-export const apiHost = 'https://fetchfoxai.com';
+// export const apiHost = 'http://localhost:8081';
+export const apiHost = 'https://fetchfox.ai';

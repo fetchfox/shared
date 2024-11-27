@@ -88,7 +88,7 @@ export const DictInput = (props) => {
   }, [pairs]);
 
   const add = (key) => {
-    const copy = [...pairs];
+    const copy = [...(pairs || [])];
     copy.push(['', '']);
     setPairs(copy);
   }

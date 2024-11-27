@@ -7,7 +7,7 @@
   user-select: none;
   border: 0;
   text-decoration: none;
-  background-color: #df6546ee;
+  background: linear-gradient(100deg, #FD953A 0%, #FB8014 50%, #EC6105 100%);
   color: white;
   font-weight: bold;
   text-align: center;
@@ -16,7 +16,6 @@
   height: 32px;
   padding: 8px 16px;
   border-radius: 4px;
-  box-shadow: 3px 3px #df654666;
 }
 
 .ButtonSimple {
@@ -33,12 +32,14 @@
 }
 
 .Button:hover {
+  /* background: linear-gradient(145deg, #FD953A 0%, #FB8014 50%, #EC6105 100%); */
   opacity: 0.8;
 }
 
 .Button:active {
-  transform: translate(2px, 2px);
-  box-shadow: 1px 1px #df654666;
+  /* transform: translate(2px, 2px); */
+  /* box-shadow: 1px 1px #FB801466; */
+  opacity: 0.5;
 }
 
 .Button[disabled] {
@@ -47,49 +48,53 @@
 
 .Button[disabled]:hover {
   transform: unset;
-  box-shadow: 3px 3px #df654666;
+  /* box-shadow: 3px 3px #FB801466; */
 }
 
 .ButtonOutline {
-  background-color: white;
-  color: #df6546;
-  border: 1px solid #df6546;
+  background: white;
+  color: #FB8014;
+  border: 1px solid #FD953A;
+}
+
+.ButtonOutline:hover {
+  background: white;
 }
 
 .ButtonGray {
   background-color: white;
   color: #888;
   border: 1px solid #888;
-  box-shadow: 3px 3px #ccc;
+  /* box-shadow: 3px 3px #ccc; */
 }
 
 .ButtonSmall {
   font-size: 12px;
   height: 24px;
   padding: 4px 8px;
-  box-shadow: 2px 2px #df654666;
+  /* box-shadow: 2px 2px #FB801466; */
 }
 .ButtonSmall:active {
   transform: translate(2px, 2px);
-  box-shadow: 0px 0px #df654666;
+  /* box-shadow: 0px 0px #FB801466; */
 }
 
 .ButtonSmall.ButtonGray,
 .ButtonSmall.ButtonBlack
 {
-  box-shadow: 2px 2px #ccc;
+  /* box-shadow: 2px 2px #ccc; */
 }
 
 .Button.ButtonSmall:active {
   transform: translate(2px, 2px);
-  box-shadow: 0px 0px #ccc;
+  /* box-shadow: 0px 0px #ccc; */
 }
 
 .ButtonWhite {
   background-color: white;
-  color: #df6546;
+  color: #FB8014;
   border: 0;
-  box-shadow: 0px 0px;
+  /* box-shadow: 0px 0px; */
 }
 
 .ButtonWhite:active,
@@ -102,11 +107,11 @@
 .ButtonGray.ButtonTrans,
 .ButtonBlack.ButtonTrans
 {
-  background-color: transparent;
-  color: #df6546;
+  background: transparent;
+  color: #FB8014;
   border: 0;
   padding: 0;
-  box-shadow: unset;
+  /* box-shadow: unset; */
 }
 .ButtonGray.ButtonTrans {
   color: #888;
@@ -125,5 +130,5 @@
   font-size: 18px;
   height: 42px;
   padding: 10px 24px;
-  box-shadow: 3px 3px #df654666;
+  /* box-shadow: 3px 3px #FB801466; */
 }
