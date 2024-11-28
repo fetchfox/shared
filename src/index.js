@@ -9,6 +9,7 @@ export { Workflow } from './components/workflow/Workflow.js';
 export { WorkflowList } from './components/workflow/WorkflowList.js';
 export { JobList } from './components/workflow/JobList.js';
 export { Result, Results } from './components/workflow/Results.js';
+export { SendFeedback } from './components/workflow/SendFeedback.js';
 export { Loading } from './components/common/Loading.js';
 export { CsvButton } from './components/csv/CsvButton.js';
 export { StopButton } from './components/controls/StopButton.js';
@@ -24,3 +25,5 @@ export { useResponsiveCheck, useIfSmall } from './state/responsive.js';
 export { generateApiKey } from './api/index.js';
 
 export { primaryColor } from './constants.js';
+
+export { Provider } from './components/provider.js';
