@@ -5,7 +5,7 @@ import { Button } from "../input/Button";
 import { useMutation } from "@tanstack/react-query";
 import { endpoint } from "../../utils.js";
 
-const RATING_OPTIONS = [
+const ratingOptions = [
   {
     icon: FaThumbsUp,
     style: {
@@ -71,7 +71,7 @@ export function SendFeedback({ workflowId, jobId, steps }) {
           gap: 4,
         }}
       >
-        {RATING_OPTIONS.map(({ icon: Icon, style, value }) => (
+        {ratingOptions.map(({ icon: Icon, style, value }) => (
           <div
             style={{
               borderRadius: "9999px",
