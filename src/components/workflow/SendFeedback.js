@@ -5,30 +5,30 @@ import { Button } from "../input/Button";
 import { useMutation } from "@tanstack/react-query";
 import { endpoint } from "../../utils.js";
 
+const RATING_OPTIONS = [
+  {
+    icon: FaThumbsUp,
+    style: {
+      color: "#15803d",
+      background: "#86efac",
+      borderColor: "#15803d",
+    },
+    value: "up",
+  },
+  {
+    icon: FaThumbsDown,
+    style: {
+      color: "#b91c1c",
+      background: "#fca5a5",
+      borderColor: "#b91c1c",
+    },
+    value: "down",
+  },
+];
+
 export function SendFeedback({ workflowId, jobId, steps }) {
   const [rating, setRating] = useState(null); // 'up' | 'down' | null
   const [feedback, setFeedback] = useState("");
-
-  const RATINGS = [
-    {
-      icon: <FaThumbsUp />,
-      style: {
-        color: "#15803d",
-        background: "#86efac",
-        borderColor: "#15803d",
-      },
-      value: "up",
-    },
-    {
-      icon: <FaThumbsDown />,
-      style: {
-        color: "#b91c1c",
-        background: "#fca5a5",
-        borderColor: "#b91c1c",
-      },
-      value: "down",
-    },
-  ];
 
   const submit = useMutation({
     mutationFn: async () => {
@@ -71,7 +71,7 @@ export function SendFeedback({ workflowId, jobId, steps }) {
           gap: 4,
         }}
       >
-        {RATINGS.map(({ icon, style, value }) => (
+        {RATING_OPTIONS.map(({ icon: Icon, style, value }) => (
           <div
             style={{
               borderRadius: "9999px",
@@ -90,7 +90,7 @@ export function SendFeedback({ workflowId, jobId, steps }) {
             }}
             onClick={() => setRating(value)}
           >
-            {icon}
+            <Icon />
           </div>
         ))}
       </div>
