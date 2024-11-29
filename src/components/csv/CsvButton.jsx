@@ -5,9 +5,9 @@ import {
   download,
 } from 'export-to-csv';
 import { FaStopCircle, FaFileDownload } from 'react-icons/fa';
-import { Button } from '../input/Button.jsx';
+import { Button } from '../input/Button';
 import { useJob } from '../../state/job';
-import { Loading } from '../common/Loading.jsx';
+import { Loading } from '../common/Loading';
 import { useGlobalContext } from '../../contexts/index.js';
 import { primaryColor } from '../../constants.js'
 

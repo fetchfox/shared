@@ -2,13 +2,13 @@ import { useEffect, useState } from 'react';
 import { IoMdArrowDropdown, IoMdArrowDropright } from 'react-icons/io';
 import { useGlobalContext } from '../../contexts/index.js';
 import { camelToHuman } from '../../utils.js';
-import { Error } from '../error/Error.jsx';
-import { DictInput } from '../input/DictInput.jsx';
-import { Input } from '../input/Input.jsx';
-import { ListInput } from '../input/ListInput.jsx';
-import { Select } from '../input/Select.jsx';
-import { StepHeader } from './StepHeader.jsx';
-import { fieldsMeta } from './Workflow.jsx';
+import { Error } from '../error/Error';
+import { DictInput } from '../input/DictInput';
+import { Input } from '../input/Input';
+import { ListInput } from '../input/ListInput';
+import { Select } from '../input/Select';
+import { StepHeader } from './StepHeader';
+import { fieldsMeta } from './Workflow';
 
 export const GenericStepEdit = (props) => {
   const {

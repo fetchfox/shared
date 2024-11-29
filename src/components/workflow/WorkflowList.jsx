@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaTrash } from 'react-icons/fa';
-import { Button } from '../input/Button.jsx';
+import { Button } from '../input/Button';
 
 export const WorkflowList = ({ workflows, limit, onOpen, onRemove }) => {
   const nodes = workflows

@@ -5,7 +5,7 @@ import {
   MdAddCircle,
   MdAddBox,
 } from 'react-icons/md';
-import { Button } from '../input/Button.jsx';
+import { Button } from '../input/Button';
 
 export const StepHeader = ({
   prettyName,

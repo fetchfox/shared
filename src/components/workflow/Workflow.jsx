@@ -21,22 +21,22 @@ import { useGlobalContext }  from '../../contexts/index.js';
 
 import { TableFromItems } from '../table/TableFromItems';
 import { Table } from '../table/Table';
-import { Button } from '../input/Button.jsx';
-import { Input } from '../input/Input.jsx';
-import { ListInput } from '../input/ListInput.jsx';
-import { DictInput } from '../input/DictInput.jsx';
-import { Select } from '../input/Select.jsx';
-import { Textarea } from '../input/Textarea.jsx';
-import { Modal } from '../modal/Modal.jsx';
-import { Error } from '../error/Error.jsx';
+import { Button } from '../input/Button';
+import { Input } from '../input/Input';
+import { ListInput } from '../input/ListInput';
+import { DictInput } from '../input/DictInput';
+import { Select } from '../input/Select';
+import { Textarea } from '../input/Textarea';
+import { Modal } from '../modal/Modal';
+import { Error } from '../error/Error';
 
 import { primaryColor, primaryColorDark } from '../../constants.js';
 import { endpoint, camelToHuman } from '../../utils.js';
 
-import { StepHeader } from './StepHeader.jsx';
-import { GenericStepEdit } from './GenericStepEdit.jsx';
-import { Result } from './Results.jsx';
-import { GlobalOptions } from './GlobalOptions.jsx';
+import { StepHeader } from './StepHeader';
+import { GenericStepEdit } from './GenericStepEdit';
+import { Result } from './Results';
+import { GlobalOptions } from './GlobalOptions';
 
 
 export const fieldsMeta = {
