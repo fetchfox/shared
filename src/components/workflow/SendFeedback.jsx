@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { FaThumbsUp, FaThumbsDown } from "react-icons/fa";
-import { Textarea } from "../input/Textarea";
-import { Button } from "../input/Button";
-import { useMutation } from "@tanstack/react-query";
+import { FaThumbsDown, FaThumbsUp } from "react-icons/fa";
 import { endpoint } from "../../utils.js";
+import { Button } from "../input/Button";
+import { Textarea } from "../input/Textarea";
 
 const ratingOptions = [
   {
@@ -30,18 +29,25 @@ export function SendFeedback({ meta }) {
   const [rating, setRating] = useState(null); // 'up' | 'down' | null
   const [feedback, setFeedback] = useState("");
 
-  const submit = useMutation({
-    mutationFn: async () => {
-      fetch(endpoint("/api/internal/feedback"), {
+  const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
+
+  const onSubmit = async () => {
+    setLoading(true);
+    try {
+      await fetch(endpoint("/api/v2/feedback"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ rating, feedback, meta }),
       });
-    },
-  });
+    } finally {
+      setLoading(false);
+      setDone(true);
+    }
+  };
 
   // once we've submitted, hide the feedback form
-  if (submit.isError || submit.isSuccess) return null;
+  if (done) return null;
 
   return (
     <div
@@ -117,8 +123,8 @@ export function SendFeedback({ meta }) {
           <Button
             small
             style={{ width: "100%" }}
-            onClick={submit.mutate}
-            loading={submit.isPending}
+            onClick={onSubmit}
+            loading={loading}
           >
             Submit
           </Button>

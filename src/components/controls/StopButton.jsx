@@ -1,9 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
 import { FaStop } from 'react-icons/fa';
 import { useGlobalContext } from '../../contexts/index.js';
-import { useJob } from '../../state/job.js';
-import { Button } from '../input/Button.js';
-import { foxHost } from '../../constants.js';
+import { Button } from '../input/Button';
 
 export const StopButton = ({ jobId, onStop, ...rest }) => {
   const { fox } = useGlobalContext();

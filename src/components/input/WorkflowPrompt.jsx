@@ -8,7 +8,7 @@ import { Error } from '../error/Error';
 import { FaArrowRight } from 'react-icons/fa';
 import { useGlobalContext }  from '../../contexts/index.js';
 import { cleanWorkflow } from '../../lib/workflow.js';
-import { Workflow } from '../workflow/Workflow.js';
+import { Workflow } from '../workflow/Workflow';
 import { FaCode } from 'react-icons/fa';
 
 const UrlsInput = ({ currentUrl, value, onChange, disabled }) => {

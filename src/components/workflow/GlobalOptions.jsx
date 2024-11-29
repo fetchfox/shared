@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MdEditSquare } from 'react-icons/md';
 
-import { Check } from '../input/Check.js';
-import { Input } from '../input/Input.js';
-import { Button } from '../input/Button.js';
+import { Check } from '../input/Check';
+import { Input } from '../input/Input';
+import { Button } from '../input/Button';
 
 export const GlobalOptions = ({ workflow, onChange }) => {
   const [limit, setLimit] = useState('');

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Button } from './Button.js';
-import { ByokInput } from './ByokInput.js';
+import { Button } from './Button';
+import { ByokInput } from './ByokInput';
 import { primaryColor } from '../../constants.js';
 import { useIfSmall } from '../../state/responsive.js';
 
