@@ -4,7 +4,7 @@ import { endpoint } from "../../utils.js";
 import { Button } from "../input/Button";
 import { Textarea } from "../input/Textarea";
 
-const RATING_OPTIONS = [
+const ratingOptions = [
   {
     icon: FaThumbsUp,
     style: {
@@ -25,7 +25,7 @@ const RATING_OPTIONS = [
   },
 ];
 
-export function SendFeedback({ workflowId, jobId, steps }) {
+export function SendFeedback({ meta }) {
   const [rating, setRating] = useState(null); // 'up' | 'down' | null
   const [feedback, setFeedback] = useState("");
 
@@ -38,7 +38,7 @@ export function SendFeedback({ workflowId, jobId, steps }) {
       await fetch(endpoint("/api/v2/feedback"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rating, feedback, jobId, workflowId, steps }),
+        body: JSON.stringify({ rating, feedback, meta }),
       });
     } finally {
       setLoading(false);
@@ -77,7 +77,7 @@ export function SendFeedback({ workflowId, jobId, steps }) {
           gap: 4,
         }}
       >
-        {RATING_OPTIONS.map(({ icon: Icon, style, value }) => (
+        {ratingOptions.map(({ icon: Icon, style, value }) => (
           <div
             style={{
               borderRadius: "9999px",
