@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Input } from './Input.js';
-import { Select } from './Select.js';
-import { Loading  } from '../common/Loading.js';
-import { Error  } from '../error/Error.js';
+import { Input } from './Input.jsx';
+import { Select } from './Select.jsx';
+import { Loading  } from '../common/Loading.jsx';
+import { Error  } from '../error/Error.jsx';
 import { useCheckApiKey, useModels } from '../../state/ai.js';
 
 export const ByokInput = ({ value, onChange }) => {

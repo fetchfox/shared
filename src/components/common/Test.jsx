@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { useGlobalContext } from '../../contexts/index.js';
-import { Button } from '../input/Button.js';
+import { Button } from '../input/Button.jsx';
 
 export const Test = () => {
   const ctx = useGlobalContext();

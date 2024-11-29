@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { IoMdCloseCircle } from 'react-icons/io';
-import { Button } from '../input/Button.js';
-import { Table } from './Table.js';
+import { Button } from '../input/Button.jsx';
+import { Table } from './Table.jsx';
 
 const Hover = ({ item, onClose }) => {
   if (!item) return null;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Loading } from '../common/Loading.js';
+import { Loading } from '../common/Loading.jsx';
 import { primaryColor } from '../../constants.js';
 import { Tooltip } from 'react-tooltip';
 import styles from './Button.module.css';

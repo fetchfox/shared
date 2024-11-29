@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 
 export const Loading = ({ width, size, color, children }) => {
   color = color || '#333';

@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { FaCheckCircle, FaDotCircle, FaTrash } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
-import { Loading } from '../common/Loading.js';
-import { Button } from '../input/Button.js';
+import { Loading } from '../common/Loading.jsx';
+import { Button } from '../input/Button.jsx';
 
 const JobRow = ({ id, useJob, onOpen, onRemove }) => {
   const [job] = useJob(id);

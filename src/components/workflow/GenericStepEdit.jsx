@@ -1,30 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
-import {
-  FaArrowAltCircleDown,
-  FaCheckCircle,
-  FaEdit,
-  FaTimesCircle,dit
-} from 'react-icons/fa';
-import { IoArrowUndo } from "react-icons/io5";
-import { IoMdArrowDropright, IoMdArrowDropdown } from 'react-icons/io';
-import {
-  MdCancel,
-  MdEditSquare,
-  MdAddCircle,
-  MdAddBox,
-} from 'react-icons/md';
-import { useGlobalContext }  from '../../contexts/index.js';
-import { TableFromItems } from '../table/TableFromItems';
-import { Button } from '../input/Button.js';
-import { Input } from '../input/Input.js';
-import { ListInput } from '../input/ListInput.js';
-import { DictInput } from '../input/DictInput.js';
-import { Select } from '../input/Select.js';
-import { Textarea } from '../input/Textarea.js';
-import { Error } from '../error/Error.js';
-import { StepHeader } from './StepHeader.js';
+import { useEffect, useState } from 'react';
+import { IoMdArrowDropdown, IoMdArrowDropright } from 'react-icons/io';
+import { useGlobalContext } from '../../contexts/index.js';
 import { camelToHuman } from '../../utils.js';
-import { fieldsMeta } from './Workflow.js';
+import { Error } from '../error/Error.jsx';
+import { DictInput } from '../input/DictInput.jsx';
+import { Input } from '../input/Input.jsx';
+import { ListInput } from '../input/ListInput.jsx';
+import { Select } from '../input/Select.jsx';
+import { StepHeader } from './StepHeader.jsx';
+import { fieldsMeta } from './Workflow.jsx';
 
 export const GenericStepEdit = (props) => {
   const {
