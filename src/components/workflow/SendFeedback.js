@@ -26,16 +26,16 @@ const RATING_OPTIONS = [
   },
 ];
 
-export function SendFeedback({ workflowId, jobId, steps }) {
+export function SendFeedback({ meta }) {
   const [rating, setRating] = useState(null); // 'up' | 'down' | null
   const [feedback, setFeedback] = useState("");
 
   const submit = useMutation({
     mutationFn: async () => {
-      fetch(endpoint("/api/v2/feedback"), {
+      fetch(endpoint("/api/internal/feedback"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rating, feedback, jobId, workflowId, steps }),
+        body: JSON.stringify({ rating, feedback, meta }),
       });
     },
   });
