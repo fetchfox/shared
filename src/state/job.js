@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { useGlobalContext } from '../contexts';
 
 export const useJob = (id) => {

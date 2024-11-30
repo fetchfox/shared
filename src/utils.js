@@ -1,3 +1,9 @@
+import { apiHost } from './constants';
+
+export const endpoint = (path) => {
+  return `${apiHost}${path}`;
+};
+
 // https://chatgpt.com/share/6743af5d-f2d0-8008-9883-0852c7a26e85
 export const camelToHuman = (s) => {
   return s
