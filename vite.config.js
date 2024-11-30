@@ -9,6 +9,7 @@ export default defineConfig({
   build: {
     minify: 'esbuild', // Ensure minification to avoid dev artifacts
     sourcemap: false,
+    emptyOutDir: true,
     lib: {
       entry: 'src/index.js', // Entry point for your library
       name: 'fetchfox-shared',

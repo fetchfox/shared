@@ -26,12 +26,10 @@ const Choice = ({ title, subtitle, description, button, loading, children, onCli
       }}
     >
       <div>
-        <div stylex={{ fontSize: 18, fontWeight: 'bold', color: '#444', fontVariantCaps: 'small-caps' }}>
-          {subtitle}
-        </div>
-        <div stylex={{ fontSize: 24, color: '#999' }}>{title}</div>
+        <div style={{ fontSize: 18, fontWeight: 'bold', color: '#444', fontVariantCaps: 'small-caps' }}>{subtitle}</div>
+        <div style={{ fontSize: 24, color: '#999' }}>{title}</div>
       </div>
-      <div stylex={{ fontSize: 14 }}>{description}</div>
+      <div style={{ fontSize: 14 }}>{description}</div>
       {children}
       <div style={{ flexGrow: 1 }}></div>
       <Button large loading={loading} onClick={onClick} disabled={disabled}>
