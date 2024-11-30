@@ -20,5 +20,5 @@ export { useJob } from './state/job';
 export { useResponsiveCheck, useIfSmall } from './state/responsive';
 
 export { primaryColor } from './constants';
-export { generateApiKey, endpoint, callApi } from './api';
+export { generateApiKey, endpoint, setApiHost, callApi } from './api';
 export { GlobalContext, GlobalContextProvider, useGlobalContext, useUserSync } from './contexts';

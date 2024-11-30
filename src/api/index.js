@@ -1,9 +1,15 @@
 import { apiHost } from '../constants';
 
 export const endpoint = (path) => {
-  return `${apiHost}${path}`;
+  const host = currentApiHost.apiHost || apiHost;
+  return `${host}${path}`;
 };
 
+export const setApiHost = (host) => {
+  currentApiHost.apiHost = host;
+};
+
+export let currentApiHost = { apiHost: null };
 export let currentApiKey = { apiKey: null };
 
 export function callApi(method, urlEndpoint, data) {
