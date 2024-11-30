@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { endpoint } from '../utils.js';
+import { callApi } from '../api';
 
 export const useStepLibrary = () => {
   const [library, setLibrary] = useState();
 
   useEffect(() => {
-    fetch(endpoint(`/api/workflow/step-library`))
+    callApi('GET', '/api/workflow/step-library')
       .then((resp) => resp.json())
       .then(setLibrary);
   }, []);
