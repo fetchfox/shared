@@ -1,9 +1,38 @@
-import { endpoint } from '../utils.js';
+import { apiHost } from '../constants';
+
+export const endpoint = (path) => {
+  const host = currentApiHost.apiHost || apiHost;
+  return `${host}${path}`;
+};
+
+export const setApiHost = (host) => {
+  currentApiHost.apiHost = host;
+};
+
+export let currentApiHost = { apiHost: null };
+export let currentApiKey = { apiKey: null };
+
+export function callApi(method, urlEndpoint, data) {
+  const params = {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+  };
+
+  if (data) {
+    params.body = JSON.stringify(data);
+  }
+
+  if (urlEndpoint.startsWith('/api/v2')) {
+    const { apiKey } = currentApiKey;
+    if (apiKey) {
+      params.headers['Authorization'] = `Bearer ${apiKey}`;
+    }
+  }
+
+  return fetch(endpoint(urlEndpoint), params);
+}
 
 export const generateApiKey = async () => {
-  const resp = await fetch(endpoint(`/api/key/generate`), {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-  });
+  const resp = await callApi('POST', '/api/key/generate');
   return await resp.json();
 };

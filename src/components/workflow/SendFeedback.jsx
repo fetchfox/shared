@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FaThumbsDown, FaThumbsUp } from 'react-icons/fa';
-import { endpoint } from '../../utils.js';
+import { endpoint } from '../../api';
 import { Button } from '../input/Button';
 import { Textarea } from '../input/Textarea';
 
@@ -29,25 +29,15 @@ export function SendFeedback({ meta }) {
   const [rating, setRating] = useState(null); // 'up' | 'down' | null
   const [feedback, setFeedback] = useState('');
 
-  const [loading, setLoading] = useState(false);
-  const [done, setDone] = useState(false);
+  const [sent, setSent] = useState(false);
 
   const onSubmit = async () => {
-    setLoading(true);
-    try {
-      await fetch(endpoint('/api/v2/feedback'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rating, feedback, meta }),
-      });
-    } finally {
-      setLoading(false);
-      setDone(true);
-    }
+    setSent(true);
+    await callApi('POST', '/api/v2/feedback', { rating, feedback, meta });
   };
 
   // once we've submitted, hide the feedback form
-  if (done) return null;
+  if (sent) return null;
 
   return (
     <div
@@ -118,7 +108,7 @@ export function SendFeedback({ meta }) {
             onChange={(e) => setFeedback(e.target.value)}
             placeholder="Any additional feedback?"
           />
-          <Button small style={{ width: '100%' }} onClick={onSubmit} loading={loading}>
+          <Button small style={{ width: '100%' }} onClick={onSubmit}>
             Submit
           </Button>
         </div>
