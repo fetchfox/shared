@@ -22,4 +22,4 @@ export const cleanWorkflow = (workflow) => {
   clean.steps = cleanSteps;
 
   return clean;
-}
+};
