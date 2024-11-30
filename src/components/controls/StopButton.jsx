@@ -1,5 +1,5 @@
 import { FaStop } from 'react-icons/fa';
-import { useGlobalContext } from '../../contexts/index.js';
+import { useGlobalContext } from '../../contexts';
 import { Button } from '../input/Button';
 
 export const StopButton = ({ jobId, onStop, ...rest }) => {

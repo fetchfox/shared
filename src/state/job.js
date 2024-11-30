@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { useGlobalContext } from '../contexts/index.js';
+import { useGlobalContext } from '../contexts';
 
 export const useJob = (id) => {
   const { fox } = useGlobalContext();

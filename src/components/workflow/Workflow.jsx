@@ -1,31 +1,27 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { FaArrowAltCircleDown, FaCheckCircle, FaEdit, FaTimesCircle, FaCode } from 'react-icons/fa';
+import { useEffect, useState } from 'react';
+import { FaArrowAltCircleDown, FaCode } from 'react-icons/fa';
 import { IoArrowUndo } from 'react-icons/io5';
-import { MdCancel, MdEditSquare, MdAddCircle, MdAddBox } from 'react-icons/md';
-import { PiCodeFill } from 'react-icons/pi';
+import { MdAddBox } from 'react-icons/md';
 
-import { useSpring, animated, easings } from '@react-spring/web';
+import { animated, easings, useSpring } from '@react-spring/web';
 
-import { useGlobalContext } from '../../contexts/index.js';
+import { useGlobalContext } from '../../contexts';
 
-import { TableFromItems } from '../table/TableFromItems';
-import { Table } from '../table/Table';
+import { Error } from '../error/Error';
 import { Button } from '../input/Button';
-import { Input } from '../input/Input';
-import { ListInput } from '../input/ListInput';
-import { DictInput } from '../input/DictInput';
-import { Select } from '../input/Select';
 import { Textarea } from '../input/Textarea';
 import { Modal } from '../modal/Modal';
-import { Error } from '../error/Error';
+import { Table } from '../table/Table';
+import { TableFromItems } from '../table/TableFromItems';
 
-import { primaryColor, primaryColorDark } from '../../constants.js';
-import { endpoint, camelToHuman } from '../../utils.js';
+import { primaryColor } from '../../constants';
+import { camelToHuman } from '../../utils';
+import { endpoint } from '../../api';
 
-import { StepHeader } from './StepHeader';
 import { GenericStepEdit } from './GenericStepEdit';
-import { Result } from './Results';
 import { GlobalOptions } from './GlobalOptions';
+import { Result } from './Results';
+import { StepHeader } from './StepHeader';
 
 export const fieldsMeta = {
   crawl: {

@@ -3,7 +3,7 @@ import { Input } from './Input';
 import { Select } from './Select';
 import { Loading } from '../common/Loading';
 import { Error } from '../error/Error';
-import { useCheckApiKey, useModels } from '../../state/ai.js';
+import { useCheckApiKey, useModels } from '../../state/ai';
 
 export const ByokInput = ({ value, onChange }) => {
   const apiKey = value[value.provider] ? value[value.provider].apiKey : '';

@@ -1,7 +1,13 @@
+import path from 'path';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react'; // Remove if not using React
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname),
+    },
+  },
   esbuild: {
     jsx: 'automatic', // Enables the modern React JSX transform
   },

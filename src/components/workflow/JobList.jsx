@@ -4,6 +4,7 @@ import { FaCheckCircle, FaDotCircle, FaTrash } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
 import { Loading } from '../common/Loading';
 import { Button } from '../input/Button';
+import { capitalize } from '@/src/utils';
 
 const JobRow = ({ id, useJob, onOpen, onRemove }) => {
   const [job] = useJob(id);
@@ -47,7 +48,7 @@ const JobRow = ({ id, useJob, onOpen, onRemove }) => {
       <div style={{ fontWeight: 'bold', width: 160 }}>
         {items.length} {items.length == 1 ? 'item' : 'items'}
       </div>
-      <div style={{ width: '100%', color: '#999' }}>{ago.upperFirst()}</div>
+      <div style={{ width: '100%', color: '#999' }}>{capitalize(ago)}</div>
       <div style={{ fontFamily: 'monospace', color: '#999', fontSize: 10 }}>{job.id}</div>
       <Button
         small
