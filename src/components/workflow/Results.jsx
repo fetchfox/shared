@@ -1,29 +1,25 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { FaArrowAltCircleDown, FaDotCircle, FaCheckCircle, FaFileDownload } from 'react-icons/fa';
+import { useEffect, useState } from 'react';
+import { FaArrowAltCircleDown, FaCheckCircle, FaDotCircle, FaFileDownload } from 'react-icons/fa';
 import { FaExpand } from 'react-icons/fa6';
-import { RiExpandWidthLine } from 'react-icons/ri';
-import { PiArrowsOutLineHorizontalBold, PiArrowsInLineHorizontalBold } from 'react-icons/pi';
-import { BiCollapseHorizontal, BiExpandHorizontal } from 'react-icons/bi';
 import { MdError } from 'react-icons/md';
+import { PiArrowsInLineHorizontalBold, PiArrowsOutLineHorizontalBold } from 'react-icons/pi';
 import { Tooltip } from 'react-tooltip';
-import { Loading } from '../common/Loading';
-import { Error } from '../error/Error';
-import { TableFromItems } from '../table/TableFromItems';
-import { Modal } from '../modal/Modal';
-import { CsvButton } from '../csv/CsvButton';
 import { primaryColor } from '../../constants';
 import { useJob } from '../../state/job';
+import { Loading } from '../common/Loading';
+import { CsvButton } from '../csv/CsvButton';
+import { Error } from '../error/Error';
+import { Modal } from '../modal/Modal';
+import { TableFromItems } from '../table/TableFromItems';
+import { capitalize } from '@/src/utils';
 
 const prettyName = (name) => {
-  const n = {
+  const predefinedLabels = {
     const: 'Starting URLs',
     crawl: 'Find more URLs',
     extract: 'Extract data',
-  }[name];
-
-  if (n) return n;
-
-  return name.upperFirst();
+  };
+  return predefinedLabels[name] || capitalize(name);
 };
 
 const FullResult = ({ result }) => {

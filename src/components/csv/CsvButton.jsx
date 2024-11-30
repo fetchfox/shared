@@ -4,8 +4,8 @@ import { FaStopCircle, FaFileDownload } from 'react-icons/fa';
 import { Button } from '../input/Button';
 import { useJob } from '../../state/job';
 import { Loading } from '../common/Loading';
-import { useGlobalContext } from '../../contexts/index.js';
-import { primaryColor } from '../../constants.js';
+import { useGlobalContext } from '../../contexts';
+import { primaryColor } from '../../constants';
 
 const downloadCSV = (items) => {
   const filename = 'fetchfox';

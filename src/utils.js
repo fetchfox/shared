@@ -1,4 +1,4 @@
-import { apiHost } from './constants.js';
+import { apiHost } from './constants';
 
 export const endpoint = (path) => {
   return `${apiHost}${path}`;
@@ -13,3 +13,5 @@ export const camelToHuman = (s) => {
     .replace(/url|css/, (str) => str.toUpperCase())
     .replace(/^./, (str) => str.toUpperCase());
 };
+
+export const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);

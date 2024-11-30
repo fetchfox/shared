@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from './Button';
 import { ByokInput } from './ByokInput';
-import { primaryColor } from '../../constants.js';
-import { useIfSmall } from '../../state/responsive.js';
+import { primaryColor } from '../../constants';
+import { useIfSmall } from '../../state/responsive';
 
 const Choice = ({ title, subtitle, description, button, loading, children, onClick, disabled, active }) => {
   return (

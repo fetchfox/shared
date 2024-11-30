@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { IoMdArrowDropdown, IoMdArrowDropright } from 'react-icons/io';
-import { useGlobalContext } from '../../contexts/index.js';
-import { camelToHuman } from '../../utils.js';
+import { useGlobalContext } from '../../contexts';
+import { camelToHuman, capitalize } from '../../utils';
 import { Error } from '../error/Error';
 import { DictInput } from '../input/DictInput';
 import { Input } from '../input/Input';
@@ -161,7 +161,7 @@ const GenericStepEditInner = ({
 
     return (
       <tr>
-        <th style={{ width: 120, whiteSpace: 'nowrap', fontSize: 14 }}>{camelToHuman(key.upperFirst())}</th>
+        <th style={{ width: 120, whiteSpace: 'nowrap', fontSize: 14 }}>{camelToHuman(capitalize(key))}</th>
         <td
           style={{
             width: '100%',
