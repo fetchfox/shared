@@ -13,8 +13,7 @@ export const Test = () => {
 
   return (
     <div>
-      Test from shared 7
-      <Button>Test</Button>
+      Test from shared 7<Button>Test</Button>
     </div>
   );
-}
+};

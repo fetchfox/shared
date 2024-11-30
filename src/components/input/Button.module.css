@@ -7,7 +7,7 @@
   user-select: none;
   border: 0;
   text-decoration: none;
-  background: linear-gradient(100deg, #FD953A 0%, #FB8014 50%, #EC6105 100%);
+  background: linear-gradient(100deg, #fd953a 0%, #fb8014 50%, #ec6105 100%);
   color: white;
   font-weight: bold;
   text-align: center;
@@ -53,8 +53,8 @@
 
 .ButtonOutline {
   background: white;
-  color: #FB8014;
-  border: 1px solid #FD953A;
+  color: #fb8014;
+  border: 1px solid #fd953a;
 }
 
 .ButtonOutline:hover {
@@ -80,8 +80,7 @@
 }
 
 .ButtonSmall.ButtonGray,
-.ButtonSmall.ButtonBlack
-{
+.ButtonSmall.ButtonBlack {
   /* box-shadow: 2px 2px #ccc; */
 }
 
@@ -92,7 +91,7 @@
 
 .ButtonWhite {
   background-color: white;
-  color: #FB8014;
+  color: #fb8014;
   border: 0;
   /* box-shadow: 0px 0px; */
 }
@@ -105,10 +104,9 @@
 
 .ButtonTrans,
 .ButtonGray.ButtonTrans,
-.ButtonBlack.ButtonTrans
-{
+.ButtonBlack.ButtonTrans {
   background: transparent;
-  color: #FB8014;
+  color: #fb8014;
   border: 0;
   padding: 0;
   /* box-shadow: unset; */

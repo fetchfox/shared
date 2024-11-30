@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { useGlobalContext }  from '../contexts/index.js';
+import { useGlobalContext } from '../contexts/index.js';
 
 export const useJob = (id) => {
   const { fox } = useGlobalContext();
@@ -20,7 +20,7 @@ export const useJob = (id) => {
     }
 
     return r;
-  }
+  };
 
   useEffect(() => {
     if (!id) return;
@@ -36,8 +36,7 @@ export const useJob = (id) => {
         console.log('FOX GOT final', final);
         setResults(cleanDone(final));
       });
-
   }, [fox, id]);
 
-  return results
-}
+  return results;
+};

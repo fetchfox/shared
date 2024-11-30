@@ -10,6 +10,5 @@ export const useStepLibrary = () => {
       .then(setLibrary);
   }, []);
 
-
   return library;
-}
+};

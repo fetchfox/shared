@@ -1,16 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  FaArrowAltCircleDown,
-  FaDotCircle,
-  FaCheckCircle,
-  FaFileDownload,
-} from 'react-icons/fa';
+import { FaArrowAltCircleDown, FaDotCircle, FaCheckCircle, FaFileDownload } from 'react-icons/fa';
 import { FaExpand } from 'react-icons/fa6';
 import { RiExpandWidthLine } from 'react-icons/ri';
-import {
-  PiArrowsOutLineHorizontalBold,
-  PiArrowsInLineHorizontalBold,
-} from 'react-icons/pi';
+import { PiArrowsOutLineHorizontalBold, PiArrowsInLineHorizontalBold } from 'react-icons/pi';
 import { BiCollapseHorizontal, BiExpandHorizontal } from 'react-icons/bi';
 import { MdError } from 'react-icons/md';
 import { Tooltip } from 'react-tooltip';
@@ -31,14 +23,14 @@ const prettyName = (name) => {
 
   if (n) return n;
 
-  return name.upperFirst()
-}
+  return name.upperFirst();
+};
 
 const FullResult = ({ result }) => {
   const [showPrivate, setShowPrivate] = useState();
 
   let hasPrivate = false;
-  for (const item of (result.items || [])) {
+  for (const item of result.items || []) {
     for (const key of Object.keys(item)) {
       hasPrivate = hasPrivate || key.startsWith('_');
     }
@@ -46,53 +38,46 @@ const FullResult = ({ result }) => {
 
   return (
     <div style={{ fontWeight: 'normal' }}>
-      <div style={{ marginBottom: 10,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between' }}
-        >
+      <div style={{ marginBottom: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
           {result.items.length} result{result.items.length == 1 ? '' : 's'}
         </div>
 
-        {hasPrivate && showPrivate && <PiArrowsInLineHorizontalBold
-          size={20}
-          onClick={() => setShowPrivate(!showPrivate)}
-          style={{ cursor: 'pointer', color: '#333' }}
-        />}
-        {hasPrivate && !showPrivate &&<PiArrowsOutLineHorizontalBold
-          size={20}
-          onClick={() => setShowPrivate(!showPrivate)}
-          style={{ cursor: 'pointer', color: '#333' }}
-        />}
+        {hasPrivate && showPrivate && (
+          <PiArrowsInLineHorizontalBold
+            size={20}
+            onClick={() => setShowPrivate(!showPrivate)}
+            style={{ cursor: 'pointer', color: '#333' }}
+          />
+        )}
+        {hasPrivate && !showPrivate && (
+          <PiArrowsOutLineHorizontalBold
+            size={20}
+            onClick={() => setShowPrivate(!showPrivate)}
+            style={{ cursor: 'pointer', color: '#333' }}
+          />
+        )}
       </div>
       <TableFromItems
         noOverflow
         showPrivate={showPrivate}
         style={{ background: '#fff' }}
         allCellStyle={{ maxWidth: 600, padding: '2px 4px' }}
-        items={result.items} />
+        items={result.items}
+      />
     </div>
   );
-}
+};
 
 const ItemsResult = ({ items }) => (
   <div>
-    <TableFromItems
-      style={{ background: '#fff' }}
-      items={items}
-      overflow={6}
-      clipMiddle
-    />
+    <TableFromItems style={{ background: '#fff' }} items={items} overflow={6} clipMiddle />
   </div>
 );
 
 const ConstResult = ({ items }) => (
   <div>
-    <TableFromItems
-      noHeader
-      style={{ background: '#fff' }}
-      items={items} />
+    <TableFromItems noHeader style={{ background: '#fff' }} items={items} />
   </div>
 );
 
@@ -101,7 +86,7 @@ const CrawlResult = ({ items }) => (
     <TableFromItems
       noHeader
       style={{ background: '#fff' }}
-      items={items.map(i => ({ url: i.url }))}
+      items={items.map((i) => ({ url: i.url }))}
       overflow={6}
       clipMiddle
     />
@@ -125,11 +110,11 @@ const ResultHeader = ({ index, result }) => {
             />
             <Tooltip id={`forcedDone-${index}`} place="bottom-end" />
           </div>
-         )}
+        )}
         {result.done && result.error && <MdError size={16} color="red" />}
       </div>
       <div style={{ width: '100%' }}>
-        {title} ({ result.items?.length })
+        {title} ({result.items?.length})
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
         <CsvButton items={result.items}>
@@ -154,17 +139,17 @@ const ResultHeader = ({ index, result }) => {
       </div>
     </div>
   );
-}
+};
 
 export const Result = ({ index, result, last, inner }) => {
   const { step, items } = result;
   if (!items) return null;
 
-  const prettyName = (false && inner) ? null : <ResultHeader index={index} result={result} />;
+  const prettyName = false && inner ? null : <ResultHeader index={index} result={result} />;
 
   let node = {
-    'const': <ConstResult items={items} />,
-    'crawl': <CrawlResult items={items} />,
+    const: <ConstResult items={items} />,
+    crawl: <CrawlResult items={items} />,
   }[step.name];
 
   if (!node) {
@@ -194,15 +179,20 @@ export const Result = ({ index, result, last, inner }) => {
       border: '1px solid #ccc',
       boxShadow: `2px 2px #eee`,
       borderRadius,
-      ...(inner ? {
-        padding: 0, border: 0, boxShadow: 0
-      } : {})
+      ...(inner
+        ? {
+            padding: 0,
+            border: 0,
+            boxShadow: 0,
+          }
+        : {}),
     };
   }
 
   return (
     <div>
-      <style type="text/css">{`
+      <style type="text/css">
+        {`
 .ants {
 	border: 2px solid rgba(0,0,0,0);
   border-radius: 8px;
@@ -228,53 +218,48 @@ export const Result = ({ index, result, last, inner }) => {
 `}
       </style>
 
-      <div
-        className={className}
-        style={{ fontSize: 14,
-                 ...borderStyles,
-               }}>
-        <div style={{ display: 'flex',
-                      justifyContent: 'space-between',
-                      fontSize: 14,
-                      fontWeight: 'bold',
-                      marginBottom: 5,
-                    }}
-          >
+      <div className={className} style={{ fontSize: 14, ...borderStyles }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            fontSize: 14,
+            fontWeight: 'bold',
+            marginBottom: 5,
+          }}
+        >
           {prettyName}
         </div>
         {node}
         {errorNode}
       </div>
 
-
       {!last && !inner && (
-        <div style={{ padding: 10,
-                      width: '100%',
-                      textAlign: 'center',
-                      color: primaryColor,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-        }}>
-        <FaArrowAltCircleDown size={24} />
+        <div
+          style={{
+            padding: 10,
+            width: '100%',
+            textAlign: 'center',
+            color: primaryColor,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <FaArrowAltCircleDown size={24} />
         </div>
-       )}
+      )}
     </div>
   );
-}
+};
 
 const Inner = ({ results }) => {
   // const resultsWithItems = results.filter(x => x.items && x.items.length > 0);
   const resultsWithItems = results;
 
   let i = 0;
-  const nodes = (resultsWithItems || []).map(result => (
-    <Result
-      key={i}
-      index={i}
-      last={++i == resultsWithItems.length}
-      result={result}
-    />
+  const nodes = (resultsWithItems || []).map((result) => (
+    <Result key={i} index={i} last={++i == resultsWithItems.length} result={result} />
   ));
 
   return (
@@ -286,7 +271,7 @@ const Inner = ({ results }) => {
       */}
     </div>
   );
-}
+};
 
 export const Results = ({ jobId }) => {
   const [starting, setStarting] = useState();
@@ -318,4 +303,4 @@ export const Results = ({ jobId }) => {
       */}
     </div>
   );
-}
+};
