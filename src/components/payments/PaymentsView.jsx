@@ -3,7 +3,7 @@ import { callApi } from '@/src/api';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { useMutation } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { CardForm } from './CardForm';
 import { PaymentsLoading } from './PaymentsLoading';
 
