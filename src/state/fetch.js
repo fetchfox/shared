@@ -13,7 +13,7 @@ export const useFetchCheck = (url) => {
 
     try {
       new URL(url);
-    } catch(e) {
+    } catch (e) {
       return;
     }
 
@@ -22,18 +22,16 @@ export const useFetchCheck = (url) => {
     }
 
     setLoading(true);
-    ref.current = setTimeout(
-      () => {
-        const params = new URLSearchParams({ url, nocheck: 1, block: 1 }).toString();
-        callApi('GET', '/api/internal/fetch-check?' + params)
-          .then((resp) => resp.json())
-          .then((data) => {
-            console.log('fetch check result', data);
-            setLoading(false);
-            setResult(data);
-          });
-      },
-      1000);
+    ref.current = setTimeout(() => {
+      const params = new URLSearchParams({ url, nocheck: 1, block: 1, key: 'ff_ignore' }).toString();
+      callApi('GET', '/api/internal/fetch-check?' + params)
+        .then((resp) => resp.json())
+        .then((data) => {
+          console.log('fetch check result', data);
+          setLoading(false);
+          setResult(data);
+        });
+    }, 1000);
   }, [url]);
 
   return { result, loading };
