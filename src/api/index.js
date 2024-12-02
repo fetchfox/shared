@@ -1,5 +1,8 @@
-import { endpoint } from '../utils.js';
 import { apiHost } from '../constants';
+
+export const endpoint = (path) => {
+  return `${currentApiHost.apiHost}${path}`;
+};
 
 export const setApiHost = (host) => {
   currentApiHost.apiHost = host;

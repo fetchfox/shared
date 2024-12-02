@@ -14,9 +14,9 @@ import { Modal } from '../modal/Modal';
 import { Table } from '../table/Table';
 import { TableFromItems } from '../table/TableFromItems';
 
-import { endpoint } from '../../api';
 import { primaryColor } from '../../constants';
 import { camelToHuman } from '../../utils';
+import { endpoint } from '../../api';
 
 import { GenericStepEdit } from './GenericStepEdit';
 import { GlobalOptions } from './GlobalOptions';

@@ -13,21 +13,21 @@ const Result = ({ url, rating, html }) => {
       0,
       'FetchFox is blocked by ',
       <div style={{ color: '#E74C3C' }}>
-        <MdError />
+        <MdError size={16} />
       </div>,
     ],
     [
       40,
       'FetchFox may be able to get ',
       <div style={{ color: '#F1C40F' }}>
-        <IoWarning />
+        <IoWarning size={16} />
       </div>,
     ],
     [
       70,
       'FetchFox able to get ',
       <div style={{ color: '#27AE60' }}>
-        <FaCheckCircle />
+        <FaCheckCircle size={16} />
       </div>,
     ],
   ];
