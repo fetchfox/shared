@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, forwardRef } from 'react';
+import { forwardRef } from 'react';
 
 export const Input = forwardRef((props, ref) => {
   const { label, style, ...rest } = props;
