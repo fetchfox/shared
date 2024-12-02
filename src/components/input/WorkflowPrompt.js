@@ -5,6 +5,7 @@ import { Input } from '../input/Input';
 import { Textarea } from '../input/Textarea';
 import { Button } from '../input/Button';
 import { Error } from '../error/Error';
+import { FetchCheck } from '../check/FetchCheck';
 import { FaArrowRight } from 'react-icons/fa';
 import { useGlobalContext }  from '../../contexts/index.js';
 import { cleanWorkflow } from '../../lib/workflow.js';
@@ -358,6 +359,10 @@ export const WorkflowPrompt = ({
 
       {!onlyPreview && editCode && codeNode}
       {!onlyPreview && !editCode && formNode}
+
+      <div style={{ margin: '10px 0', fontSize: 12 }}>
+        <FetchCheck url={values.urls ? values.urls.split('\n')[0].trim() : undefined } />
+      </div>
 
       <div style={{ marginTop: 20 }}>
         {loading.preview && <p style={{ textAlign: 'center' }}>
