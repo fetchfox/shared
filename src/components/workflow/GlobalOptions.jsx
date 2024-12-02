@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MdEditSquare } from 'react-icons/md';
 
-import { Check } from '../input/Check.js';
-import { Input } from '../input/Input.js';
-import { Button } from '../input/Button.js';
+import { Check } from '../input/Check';
+import { Input } from '../input/Input';
+import { Button } from '../input/Button';
 
 export const GlobalOptions = ({ workflow, onChange }) => {
   const [limit, setLimit] = useState('');
@@ -14,7 +14,7 @@ export const GlobalOptions = ({ workflow, onChange }) => {
   const ref = useRef(null);
 
   useEffect(() => {
-    const l = workflow?.options?.limit
+    const l = workflow?.options?.limit;
     setLimit(l);
     if (l) {
       setShouldLimit(true);
@@ -31,17 +31,16 @@ export const GlobalOptions = ({ workflow, onChange }) => {
     }
 
     if (val) {
-      copy.options.limit = ''
+      copy.options.limit = '';
       setEditing(true);
     } else {
-      copy.options.limit = null
+      copy.options.limit = null;
       setEditing(false);
       setLoading(true);
       await onChange(copy);
       setLoading(false);
     }
-
-  }
+  };
 
   const save = async (e) => {
     e.preventDefault();
@@ -63,18 +62,15 @@ export const GlobalOptions = ({ workflow, onChange }) => {
     await onChange(copy);
     setLoading(false);
     setEditing(false);
-  }
+  };
 
   const edit = () => {
     setEditing(true);
     setTimeout(() => ref.current.select(), 10);
-  }
+  };
 
   const editNode = (
-    <div style={{ display: editing ? 'flex' : 'none',
-                  alignItems: 'center',
-                  gap: 10,
-                }}>
+    <div style={{ display: editing ? 'flex' : 'none', alignItems: 'center', gap: 10 }}>
       <Input
         value={limit}
         ref={ref}
@@ -82,23 +78,30 @@ export const GlobalOptions = ({ workflow, onChange }) => {
         onChange={(e) => setLimit(e.target.value)}
         style={{ width: 100 }}
       />
-      <Button small loading={loading}>Save</Button>
+      <Button small loading={loading}>
+        Save
+      </Button>
       {error}
     </div>
   );
 
   const valueNode = (
-    <div style={{ display: 'flex',
-                  gap: 10,
-                  alignItems: 'center',
-                  background: 'rgba(0,0,0,0)',
-                  border: '1px solid #ddd',
-                  padding: '2px 8px',
-                  borderRadius: 4,
-                }}>
-      <div><b>{limit}</b></div>
+    <div
+      style={{
+        display: 'flex',
+        gap: 10,
+        alignItems: 'center',
+        background: 'rgba(0,0,0,0)',
+        border: '1px solid #ddd',
+        padding: '2px 8px',
+        borderRadius: 4,
+      }}
+    >
+      <div>
+        <b>{limit}</b>
+      </div>
       <Button simple gray trans onClick={edit}>
-         <MdEditSquare size={18} />
+        <MdEditSquare size={18} />
       </Button>
     </div>
   );
@@ -106,27 +109,17 @@ export const GlobalOptions = ({ workflow, onChange }) => {
   if (!workflow) return null;
 
   return (
-    <div style={{ display: 'flex',
-                  alignItems: 'center',
-                  gap: 10,
-                  height: 36 }}>
-      <Check
-        value={shouldLimit}
-        onChange={handleShouldLimit}
-        >
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10, height: 36 }}>
+      <Check value={shouldLimit} onChange={handleShouldLimit}>
         Limit number of results
       </Check>
       {shouldLimit && !editing && valueNode}
-      <form onSubmit={save}>
-        {editNode}
-      </form>
+      <form onSubmit={save}>{editNode}</form>
       {/*
       <pre>{JSON.stringify(workflow.options, null, 2)}</pre>
       */}
     </div>
   );
-
-
 
   useEffect(() => {
     if (!workflow) return;
@@ -155,7 +148,6 @@ export const GlobalOptions = ({ workflow, onChange }) => {
   }, [shouldLimit, onChange]);
 
   const update = (field, val) => {
-
     return; //TODO
 
     console.log('global options update', field, val);
@@ -171,30 +163,26 @@ export const GlobalOptions = ({ workflow, onChange }) => {
 
     copy.options[field] = val;
     onChange(copy);
-  }
+  };
 
   if (!workflow) return null;
 
   return (
-    <div style={{ display: 'flex',
-                  alignItems: 'center',
-                  gap: 10,
-                  height: 36 }}>
-      <Check
-        value={shouldLimit}
-        onChange={setShouldLimit}
-        >
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10, height: 36 }}>
+      <Check value={shouldLimit} onChange={setShouldLimit}>
         Limit number of results
       </Check>
-      {shouldLimit && <Input
-        value={workflow.options?.limit || ''}
-        placeholder="Eg. 50"
-        onChange={(e) => update('limit', e.target.value)}
-        style={{ width: 100 }}
-        />}
+      {shouldLimit && (
+        <Input
+          value={workflow.options?.limit || ''}
+          placeholder="Eg. 50"
+          onChange={(e) => update('limit', e.target.value)}
+          style={{ width: 100 }}
+        />
+      )}
       {/*
       <pre>{JSON.stringify(workflow.options, null, 2)}</pre>
       */}
     </div>
   );
-}
+};

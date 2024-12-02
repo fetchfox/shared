@@ -1,43 +1,27 @@
-import React, { useState, useEffect, useRef } from 'react';
-import {
-  FaArrowAltCircleDown,
-  FaCheckCircle,
-  FaEdit,
-  FaTimesCircle,
-  FaCode,
-} from 'react-icons/fa';
-import { IoArrowUndo } from "react-icons/io5";
-import {
-  MdCancel,
-  MdEditSquare,
-  MdAddCircle,
-  MdAddBox,
-} from 'react-icons/md';
-import { PiCodeFill } from 'react-icons/pi';
+import { useEffect, useState } from 'react';
+import { FaArrowAltCircleDown, FaCode } from 'react-icons/fa';
+import { IoArrowUndo } from 'react-icons/io5';
+import { MdAddBox } from 'react-icons/md';
 
-import { useSpring, animated, easings } from '@react-spring/web';
+import { animated, easings, useSpring } from '@react-spring/web';
 
-import { useGlobalContext }  from '../../contexts/index.js';
+import { useGlobalContext } from '../../contexts';
 
-import { TableFromItems } from '../table/TableFromItems';
+import { Error } from '../error/Error';
+import { Button } from '../input/Button';
+import { Textarea } from '../input/Textarea';
+import { Modal } from '../modal/Modal';
 import { Table } from '../table/Table';
-import { Button } from '../input/Button.js';
-import { Input } from '../input/Input.js';
-import { ListInput } from '../input/ListInput.js';
-import { DictInput } from '../input/DictInput.js';
-import { Select } from '../input/Select.js';
-import { Textarea } from '../input/Textarea.js';
-import { Modal } from '../modal/Modal.js';
-import { Error } from '../error/Error.js';
+import { TableFromItems } from '../table/TableFromItems';
 
-import { primaryColor, primaryColorDark } from '../../constants.js';
-import { endpoint, camelToHuman } from '../../utils.js';
+import { endpoint } from '../../api';
+import { primaryColor } from '../../constants';
+import { camelToHuman } from '../../utils';
 
-import { StepHeader } from './StepHeader.js';
-import { GenericStepEdit } from './GenericStepEdit.js';
-import { Result } from './Results.js';
-import { GlobalOptions } from './GlobalOptions.js';
-
+import { GenericStepEdit } from './GenericStepEdit';
+import { GlobalOptions } from './GlobalOptions';
+import { Result } from './Results';
+import { StepHeader } from './StepHeader';
 
 export const fieldsMeta = {
   crawl: {
@@ -47,7 +31,7 @@ export const fieldsMeta = {
   fetch: {
     basic: {
       urlFields: true,
-    }    
+    },
   },
   extract: {
     primary: 'questions',
@@ -59,36 +43,23 @@ export const fieldsMeta = {
   filter: {
     basic: {
       query: true,
-    }
-  }
+    },
+  },
 };
 
-
 const ConstStep = ({ step, onEdit, editable, prettyName }) => {
-  const nodes = step.args.items.map(item => (
-    <div key={item.url}>{item.url}</div>
-  ))
+  const nodes = step.args.items.map((item) => <div key={item.url}>{item.url}</div>);
   return (
     <div>
-      <StepHeader
-        onEdit={editable && onEdit}
-        prettyName="Starting URLs" />
-      <TableFromItems
-        style={{ background: '#fff' }}
-        noHeader
-        items={step.args.items}
-      />
+      <StepHeader onEdit={editable && onEdit} prettyName="Starting URLs" />
+      <TableFromItems style={{ background: '#fff' }} noHeader items={step.args.items} />
     </div>
   );
-}
+};
 
 const ConstStepEdit = (props) => {
-  return (
-    <GenericStepEdit
-      {...props}
-      innerComponent={ConstStepEditInner} />
-  );
-}
+  return <GenericStepEdit {...props} innerComponent={ConstStepEditInner} />;
+};
 const ConstStepEditInner = ({
   key,
   step,
@@ -108,7 +79,7 @@ const ConstStepEditInner = ({
   useEffect(() => {
     if (!step?.args?.items) return;
     if (urls) return;
-    setUrls(step.args.items.map(i => i.url).join('\n'));
+    setUrls(step.args.items.map((i) => i.url).join('\n'));
   }, [step?.args?.items]);
 
   useEffect(() => {
@@ -117,18 +88,13 @@ const ConstStepEditInner = ({
     for (const url of urls.split('\n')) {
       if (!url.trim()) continue;
       items.push({ url });
-    };
+    }
     onChange('items', items);
   }, [urls]);
 
   return (
     <div>
-      <StepHeader
-        prettyName={prettyName}
-        loading={loading}
-        onDone={onDone}
-        onSave={onSave}
-      />
+      <StepHeader prettyName={prettyName} loading={loading} onDone={onDone} onSave={onSave} />
       <Textarea
         label="Enter one URL per line"
         placeholder="https://www.example.com/page"
@@ -139,7 +105,7 @@ const ConstStepEditInner = ({
       <Error small message={errors && errors.items} />
     </div>
   );
-}
+};
 
 const NewStep = ({ onChange, onCancel }) => {
   const springs = useSpring({
@@ -168,57 +134,27 @@ const NewStep = ({ onChange, onCancel }) => {
   };
 
   const nodes = Object.keys(library)
-    .filter(key => allowed[key])
+    .filter((key) => allowed[key])
     .map((key) => (
       <div
-        style={{ background: '#fff',
-                 padding: 10,
-                 borderRadius: 8,
-                 cursor: 'pointer',
-                 border: '1px solid #ccc',
-               }}
+        style={{ background: '#fff', padding: 10, borderRadius: 8, cursor: 'pointer', border: '1px solid #ccc' }}
         key={key}
         onClick={() => onChange(key)}
-        >
-        <div
-          style={{ fontWeight: 'bold',
-                   fontSize: 14,
-                   lineHeight: '16px',
-                 }}
-          >
-          {camelToHuman(library[key].name)}
-        </div>
-        <div
-          style={{ lineHeight: '18px',
-                   fontSize: 12,
-                   marginTop: 5,
-                 }}>
-          {allowed[key]}
-        </div>
+      >
+        <div style={{ fontWeight: 'bold', fontSize: 14, lineHeight: '16px' }}>{camelToHuman(library[key].name)}</div>
+        <div style={{ lineHeight: '18px', fontSize: 12, marginTop: 5 }}>{allowed[key]}</div>
       </div>
     ));
 
   return (
-    <animated.div
-      style={{ transformOrigin: 'top center',
-               ...springs }}
-      >
-      <div style={{ display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                  }}>
+    <animated.div style={{ transformOrigin: 'top center', ...springs }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <p>What type of step should we add?</p>
-        <Button
-          small outline
-          onClick={onCancel}
-          >
+        <Button small outline onClick={onCancel}>
           Cancel
         </Button>
       </div>
-      <div style={{ display: 'grid',
-                    gridTemplateColumns: 'repeat(2, 1fr)',
-                    gridAutoRows: 'auto',
-                    gap: 10 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gridAutoRows: 'auto', gap: 10 }}>
         {nodes}
       </div>
 
@@ -227,7 +163,7 @@ const NewStep = ({ onChange, onCancel }) => {
       */}
     </animated.div>
   );
-}
+};
 
 const GenericStep = ({ step, prettyName, editable, onEdit, onRemove }) => {
   const { library } = useGlobalContext();
@@ -249,13 +185,19 @@ const GenericStep = ({ step, prettyName, editable, onEdit, onRemove }) => {
     switch (argDesc.format) {
       case 'list':
       case 'array':
-        return <ul>{arg.map(x => <li>{x}</li>)}</ul>;
+        return (
+          <ul>
+            {arg.map((x) => (
+              <li>{x}</li>
+            ))}
+          </ul>
+        );
 
       case 'object':
         return (
           <Table
             cellStyles={[{ width: '10%' }]}
-            rows={Object.keys(arg).map(k => [<b>{camelToHuman(k)}</b>, ''+arg[k]])}
+            rows={Object.keys(arg).map((k) => [<b>{camelToHuman(k)}</b>, '' + arg[k]])}
           />
         );
 
@@ -268,39 +210,30 @@ const GenericStep = ({ step, prettyName, editable, onEdit, onRemove }) => {
         return arg;
 
       default:
-        return <div>{argDesc.format} {JSON.stringify(arg)}</div>;
+        return (
+          <div>
+            {argDesc.format} {JSON.stringify(arg)}
+          </div>
+        );
     }
-  }
+  };
 
-
-  const rows = keys.map(key => {
+  const rows = keys.map((key) => {
     const display = render(key);
     if (!display) return null;
-    return [
-      <b style={{ whiteSpace: 'nowrap', width: 100, display: 'inline-block' }}>{camelToHuman(key)}</b>,
-      display
-    ];
+    return [<b style={{ whiteSpace: 'nowrap', width: 100, display: 'inline-block' }}>{camelToHuman(key)}</b>, display];
   });
 
   return (
     <div>
-      <StepHeader
-        prettyName={prettyName}
-        onEdit={editable && onEdit}
-        onRemove={editable && onRemove}
-      />
+      <StepHeader prettyName={prettyName} onEdit={editable && onEdit} onRemove={editable && onRemove} />
 
       <div style={{ background: '#fff' }}>
-        <Table
-          style={{ width: '100%' }}
-          cellStyles={[{ width: '10%' }]}
-          rows={rows}
-        />
+        <Table style={{ width: '100%' }} cellStyles={[{ width: '10%' }]} rows={rows} />
       </div>
-
     </div>
   );
-}
+};
 
 export const Step = ({
   index,
@@ -317,7 +250,6 @@ export const Step = ({
   onUndo,
   onEditing,
 }) => {
-
   const [loading, setLoading] = useState();
   const [editing, setEditing] = useState();
 
@@ -337,15 +269,11 @@ export const Step = ({
 
   const cancel = () => {
     setEditing(false);
-  }
+  };
 
   const wrap = (node) => {
-    return (
-      <form onSubmit={submit}>
-        {node}
-      </form>
-    );
-  }
+    return <form onSubmit={submit}>{node}</form>;
+  };
 
   let node;
   let editNode;
@@ -355,7 +283,9 @@ export const Step = ({
     editNode = (
       <NewStep
         onChange={(name) => onSetStepWithName(name, index)}
-        onCancel={() => { onRemove() }}
+        onCancel={() => {
+          onRemove();
+        }}
       />
     );
   } else {
@@ -372,36 +302,39 @@ export const Step = ({
       step,
       editable,
       onSubmit,
-      onRemove: () => { setEditing(false); onRemove() },
+      onRemove: () => {
+        setEditing(false);
+        onRemove();
+      },
       workflowId,
       onDone: () => setEditing(false),
       onEdit: () => setEditing(true),
     };
     let pair = {
-      'const': [
+      const: [
         <ConstStep {...childProps} prettyName={`Initialize`} />,
-        <ConstStepEdit{...childProps} prettyName={`Initialize`} />,
+        <ConstStepEdit {...childProps} prettyName={`Initialize`} />,
       ],
 
-    //   'exportUrls': [
-    //     <ExportUrlsStep
-    //       index={index}
-    //       step={step}
-    //       workflow={workflow}
-    //       prettyName={`Export Files`}
-    //       onEdit={() => setEditing(true)}
-    //       onRemove={onRemove}
-    //     />,
-    //     <ExportUrlsStepEdit
-    //       index={index}
-    //       step={step}
-    //       workflow={workflow}
-    //       prettyName={`Export Files`}
-    //       onSubmit={onSubmit}
-    //       onDone={() => setEditing(false)}
-    //       onRemove={onRemove}
-    //     />,
-    //   ],
+      //   'exportUrls': [
+      //     <ExportUrlsStep
+      //       index={index}
+      //       step={step}
+      //       workflow={workflow}
+      //       prettyName={`Export Files`}
+      //       onEdit={() => setEditing(true)}
+      //       onRemove={onRemove}
+      //     />,
+      //     <ExportUrlsStepEdit
+      //       index={index}
+      //       step={step}
+      //       workflow={workflow}
+      //       prettyName={`Export Files`}
+      //       onSubmit={onSubmit}
+      //       onDone={() => setEditing(false)}
+      //       onRemove={onRemove}
+      //     />,
+      //   ],
     }[step.name];
 
     if (!pair) {
@@ -420,14 +353,7 @@ export const Step = ({
   let resultNode;
   if (result) {
     resultNode = (
-      <div
-        style={{ width: '50%',
-                 padding: 10,
-                 border: '1px solid #ccc',
-                 background: '#eee',
-                 borderRadius: 8,
-               }}
-        >
+      <div style={{ width: '50%', padding: 10, border: '1px solid #ccc', background: '#eee', borderRadius: 8 }}>
         <Result index={index} result={result} inner />
       </div>
     );
@@ -435,22 +361,19 @@ export const Step = ({
 
   return (
     <div>
-      <div
-        style={{ display: 'flex',
-                 width: '100%',
-                 borderRadius: 8,
-                 gap: 20,
-               }}
+      <div style={{ display: 'flex', width: '100%', borderRadius: 8, gap: 20 }}>
+        <div
+          style={{
+            border: '1px solid #ccc',
+            background: 'white',
+            boxShadow: `2px 2px #eee`,
+            borderRadius: 8,
+            padding: 10,
+            fontSize: 14,
+            width: result ? '50%' : '100%',
+            height_x: '1%',
+          }}
         >
-        <div style={{ border: '1px solid #ccc',
-                      background: 'white',
-                      boxShadow: `2px 2px #eee`,
-                      borderRadius: 8,
-                      padding: 10,
-                      fontSize: 14,
-                      width: result ? '50%' : '100%',
-                      height_x: '1%',
-                    }}>
           {!editing && node}
           {editing && editNode}
         </div>
@@ -458,43 +381,45 @@ export const Step = ({
       </div>
 
       <div style={{ position: 'relative' }}>
-        <div style={{ position: 'absolute',
-                      right: result ? 'calc(50vw - 12px)' : 0,
-                      height: 46,
-                      display: 'flex',
-                      alignItems: 'center',
-                      marginRight: 0,
-                      padding: 0,
-                      width: result ? '50%' : '100%',
-                      justifyContent: last ? 'center' : 'flex-end',
-                    }}>
-          {onUndo && <Button
-           className="bt bt-white bt-sm"
-             small trans
-             onClick={onUndo}
-            >
-            <IoArrowUndo style={{ marginTop: -2 }} size={14} /> Undo
-          </Button>}
-          {editable && <Button
-            simple gray trans
-            onClick={onAddStep}
-            tooltip="Add Step"
-            >
-           <MdAddBox size={24} />
-          </Button>}
+        <div
+          style={{
+            position: 'absolute',
+            right: result ? 'calc(50vw - 12px)' : 0,
+            height: 46,
+            display: 'flex',
+            alignItems: 'center',
+            marginRight: 0,
+            padding: 0,
+            width: result ? '50%' : '100%',
+            justifyContent: last ? 'center' : 'flex-end',
+          }}
+        >
+          {onUndo && (
+            <Button className="bt bt-white bt-sm" small trans onClick={onUndo}>
+              <IoArrowUndo style={{ marginTop: -2 }} size={14} /> Undo
+            </Button>
+          )}
+          {editable && (
+            <Button simple gray trans onClick={onAddStep} tooltip="Add Step">
+              <MdAddBox size={24} />
+            </Button>
+          )}
         </div>
         {!last && (
-          <div style={{ padding: 10,
-                        width: result ? '50%' : '100%',
-                        textAlign: 'center',
-                        color: primaryColor,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-          }}>
+          <div
+            style={{
+              padding: 10,
+              width: result ? '50%' : '100%',
+              textAlign: 'center',
+              color: primaryColor,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
             <FaArrowAltCircleDown size={24} />
           </div>
-         )}
+        )}
 
         {/*
         <pre>{JSON.stringify(result, null, 2)}</pre>
@@ -502,7 +427,7 @@ export const Step = ({
       </div>
     </div>
   );
-}
+};
 
 export const Workflow = ({ workflow, results, editable, onChange, onEditing }) => {
   const { library } = useGlobalContext();
@@ -519,7 +444,7 @@ export const Workflow = ({ workflow, results, editable, onChange, onEditing }) =
   const handleEditing = (editing_) => {
     setEditing(editing_);
     onEditing && onEditing(editing_);
-  }
+  };
 
   const handleSubmit = async (index, step) => {
     const copySteps = JSON.parse(JSON.stringify(steps));
@@ -530,13 +455,11 @@ export const Workflow = ({ workflow, results, editable, onChange, onEditing }) =
 
     const url = endpoint(`/api/workflow/validate`);
     console.log('validate url', url);
-    const resp = await fetch(
-      url,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ steps: copy.steps }),
-      });
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ steps: copy.steps }),
+    });
     const data = await resp.json();
     console.log('validate resp', data);
     if (data.errors) {
@@ -544,18 +467,18 @@ export const Workflow = ({ workflow, results, editable, onChange, onEditing }) =
     }
 
     return onChange(copy);
-  }
+  };
 
   const addStep = async (step, index) => {
     const copy = JSON.parse(JSON.stringify(workflow));
     copy.steps.splice(index, 0, step);
     setSteps(copy.steps);
-  }
+  };
 
   const undo = () => {
     addStep(undoData.step, undoData.index);
     setUndoData(null);
-  }
+  };
 
   const setStepWithName = async (name, index) => {
     const s = { name, args: {} };
@@ -567,7 +490,7 @@ export const Workflow = ({ workflow, results, editable, onChange, onEditing }) =
     const copySteps = JSON.parse(JSON.stringify(steps));
     copySteps[index] = s;
     setSteps(copySteps);
-  }
+  };
 
   const removeStep = async (index) => {
     const copy = JSON.parse(JSON.stringify(steps));
@@ -583,7 +506,7 @@ export const Workflow = ({ workflow, results, editable, onChange, onEditing }) =
 
     setUndoData({ step: removed, index });
     setTimeout(() => setUndoData(null), 4000);
-  }
+  };
 
   // const results = [];
 
@@ -612,7 +535,7 @@ export const Workflow = ({ workflow, results, editable, onChange, onEditing }) =
   for (let i = 0; i < steps.length; i++) {
     let result;
     if (results) {
-      if (i >= results.length){
+      if (i >= results.length) {
         result = {};
       } else {
         result = results[i];
@@ -625,7 +548,7 @@ export const Workflow = ({ workflow, results, editable, onChange, onEditing }) =
   }
 
   let i = 0;
-  const nodes = pairs.map(pair => {
+  const nodes = pairs.map((pair) => {
     const index = i++;
 
     const props = {
@@ -641,7 +564,9 @@ export const Workflow = ({ workflow, results, editable, onChange, onEditing }) =
       onSubmit: (val) => handleSubmit(index, val),
       onAddStep: () => addStep({ name: 'new', args: {} }, index + 1),
       onSetStepWithName: (name, index) => setStepWithName(name, index),
-      onRemove: () => { removeStep(index) },
+      onRemove: () => {
+        removeStep(index);
+      },
       onUndo_disabled: undoData?.index == index + 1 ? undo : null,
     };
 
@@ -651,15 +576,17 @@ export const Workflow = ({ workflow, results, editable, onChange, onEditing }) =
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <GlobalOptions
-          workflow={workflow}
-          onChange={onChange}
-        />
+        <GlobalOptions workflow={workflow} onChange={onChange} />
 
         <Modal title="Scraper JSON">
           <FaCode color="#888" size={16} />
           <div style={{ maxWidth: 500 }}>
-            <p>JSON definition of this scrape job is below. Visit our GitHub for more information on running using code: <a href="https://github.com/fetchfox/fetchfox" target="_blank">https://github.com/fetchfox/fetchfox</a></p>
+            <p>
+              JSON definition of this scrape job is below. Visit our GitHub for more information on running using code:{' '}
+              <a href="https://github.com/fetchfox/fetchfox" target="_blank">
+                https://github.com/fetchfox/fetchfox
+              </a>
+            </p>
             <br />
             <textarea
               rows={16}
@@ -676,5 +603,5 @@ export const Workflow = ({ workflow, results, editable, onChange, onEditing }) =
       <br />
       {nodes}
     </div>
-  )
-}
+  );
+};

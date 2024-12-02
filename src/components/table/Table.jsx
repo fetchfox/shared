@@ -14,18 +14,14 @@ export const Table = ({ rows, style, allCellStyle, cellStyles, hoverCell }) => {
   const enter = (ri, ci) => {
     if (!hoverCell) return;
     setHlCell([ri, ci || -1]);
-  }
+  };
 
   let ri = 0;
   const rowNodes = rows.map((row) => {
     if (!row) return null;
 
     let extraProps = {};
-    if (
-      ri > 1 &&
-      row.length == 1 &&
-      rows[0].length > 1)
-    {
+    if (ri > 1 && row.length == 1 && rows[0].length > 1) {
       extraProps.colSpan = rows[0].length;
     }
 
@@ -33,8 +29,8 @@ export const Table = ({ rows, style, allCellStyle, cellStyles, hoverCell }) => {
     const myRi = ri++;
     const cellNodes = row.map((cell) => {
       const myCi = ci++;
-      const hl = (hlCell[0] == myRi && (hlCell[1] == myCi || hlCell[1] == -1));
-      const cellStyle = (cellStyles && cellStyles.length >= myCi) ? cellStyles[myCi] : {};
+      const hl = hlCell[0] == myRi && (hlCell[1] == myCi || hlCell[1] == -1);
+      const cellStyle = cellStyles && cellStyles.length >= myCi ? cellStyles[myCi] : {};
 
       // console.log('cell', cell);
       // if (cell === true || cell === false) {
@@ -43,24 +39,17 @@ export const Table = ({ rows, style, allCellStyle, cellStyles, hoverCell }) => {
 
       return (
         <td
-          style={{ ...tdStyle,
-                   ...cellStyle,
-                   ...(allCellStyle || {}),
-                   ...(hl ? { background: '#f3f3f3'} : {})
-                 }}
-          key={''+myRi+':'+myCi}
+          style={{ ...tdStyle, ...cellStyle, ...(allCellStyle || {}), ...(hl ? { background: '#f3f3f3' } : {}) }}
+          key={'' + myRi + ':' + myCi}
           {...extraProps}
-          >
+        >
           {cell}
         </td>
       );
     });
-    
+
     return (
-      <tr
-        onMouseEnter={() => enter(myRi, -1)}
-        key={ri++}
-        >
+      <tr onMouseEnter={() => enter(myRi, -1)} key={ri++}>
         {cellNodes}
       </tr>
     );
@@ -68,14 +57,9 @@ export const Table = ({ rows, style, allCellStyle, cellStyles, hoverCell }) => {
 
   return (
     <div style={{ overflowX: 'scroll' }}>
-      <table
-        onMouseLeave={() => setHlCell([-1, -1])}
-        style={{ borderCollapse: 'collapse', ...style }}
-        >
-        <tbody>
-          {rowNodes}
-        </tbody>
+      <table onMouseLeave={() => setHlCell([-1, -1])} style={{ borderCollapse: 'collapse', ...style }}>
+        <tbody>{rowNodes}</tbody>
       </table>
     </div>
   );
-}
+};

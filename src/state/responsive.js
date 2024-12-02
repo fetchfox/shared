@@ -5,7 +5,8 @@ export function useResponsiveCheck(mediaQuery) {
   const matches = useMediaQuery(mediaQuery);
   const ifMatch = useCallback((styles) => (matches ? styles : {}), [matches]);
   const [check, setCheck] = useState({
-    ifMatch, matches,
+    ifMatch,
+    matches,
   });
 
   useEffect(() => {

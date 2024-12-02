@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Loading } from '../common/Loading.js';
-import { primaryColor } from '../../constants.js';
+import { Loading } from '../common/Loading';
+import { primaryColor } from '../../constants';
 import { Tooltip } from 'react-tooltip';
 import styles from './Button.module.css';
 
@@ -9,20 +9,7 @@ export const Button = (props) => {
   const [width_, setWidth_] = useState(null);
   const buttonRef = useRef(null);
 
-  const {
-    href,
-    simple,
-    small,
-    large,
-    gray,
-    black,
-    white,
-    outline,
-    trans,
-    loading,
-    disabled,
-    ...rest
-  } = props;
+  const { href, simple, small, large, gray, black, white, outline, trans, loading, disabled, ...rest } = props;
 
   useEffect(() => {
     if (!loading && buttonRef?.current?.offsetWidth) {
@@ -84,29 +71,24 @@ export const Button = (props) => {
       data-tooltip-id="tooltip1"
       data-tooltip-content={props.tooltip}
       disabled={!!props.disabled}
-      >
-
+    >
       {!props.loading && props.children}
       {props.loading && (
         <div style={{ position: 'relative', top: 2 }}>
-        <Loading
-        size={props.small ? 14 : 18}
-        color="white"
-        />
-        </div>)
-       }
-        {props.tooltip && (
-          <Tooltip
-          id="tooltip1"
-          place={props.tooltipPlace || "bottom"}
-          />
-         )}
+          <Loading size={props.small ? 14 : 18} color="white" />
+        </div>
+      )}
+      {props.tooltip && <Tooltip id="tooltip1" place={props.tooltipPlace || 'bottom'} />}
     </button>
   );
 
   if (href) {
-    body = <a href={href} style={{ textDecoration: 'none', ...rest.style }}>{body}</a>;
+    body = (
+      <a href={href} style={{ textDecoration: 'none', ...rest.style }}>
+        {body}
+      </a>
+    );
   }
 
   return body;
-}
+};

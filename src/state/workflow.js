@@ -1,15 +1,14 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { endpoint } from '../utils.js';
+import { useEffect, useState } from 'react';
+import { callApi } from '../api';
 
 export const useStepLibrary = () => {
   const [library, setLibrary] = useState();
 
-  useMemo(() => {
-    fetch(endpoint(`/api/workflow/step-library`))
+  useEffect(() => {
+    callApi('GET', '/api/workflow/step-library')
       .then((resp) => resp.json())
       .then(setLibrary);
   }, []);
 
-
   return library;
-}
+};

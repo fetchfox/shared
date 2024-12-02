@@ -2,8 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { FaCheckCircle, FaDotCircle, FaTrash } from 'react-icons/fa';
 import { Tooltip } from 'react-tooltip';
-import { Loading } from '../common/Loading.js';
-import { Button } from '../input/Button.js';
+import { Loading } from '../common/Loading';
+import { Button } from '../input/Button';
+import { capitalize } from '@/src/utils';
 
 const JobRow = ({ id, useJob, onOpen, onRemove }) => {
   const [job] = useJob(id);
@@ -17,71 +18,60 @@ const JobRow = ({ id, useJob, onOpen, onRemove }) => {
 
   return (
     <div
-      style={{ display: 'flex',
-               alignItems: 'center',
-               gap: 8,
-               cursor: 'pointer',
-               borderTop: '1px solid #ccc',
-               padding: 5,
-               whiteSpace: 'nowrap',
-               height: 30,
-             }}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
+        cursor: 'pointer',
+        borderTop: '1px solid #ccc',
+        padding: 5,
+        whiteSpace: 'nowrap',
+        height: 30,
+      }}
       onClick={() => onOpen()}
-      >
+    >
       <div style={{ display: 'flex', alignItems: 'center' }}>
         {!job.done && <Loading size={14} />}
         {job.done && !job.forcedDone && <FaCheckCircle color="green" />}
         {job.done && job.forcedDone && (
           <div style={{ display: 'flex', alignItems: 'center' }}>
-          <FaDotCircle
-          size={16}
-          color="#ffc107"
-          data-tooltip-id={`forcedDone-${job.id}`}
-          data-tooltip-content="Stopped before completion"
-          
-          />
-          <Tooltip id={`forcedDone-${job.id}`} place="bottom-end" />
+            <FaDotCircle
+              size={16}
+              color="#ffc107"
+              data-tooltip-id={`forcedDone-${job.id}`}
+              data-tooltip-content="Stopped before completion"
+            />
+            <Tooltip id={`forcedDone-${job.id}`} place="bottom-end" />
           </div>
-         )}
+        )}
       </div>
       <div style={{ fontWeight: 'bold', width: 160 }}>
         {items.length} {items.length == 1 ? 'item' : 'items'}
       </div>
-      <div style={{ width: '100%', color: '#999' }}>
-        {ago.upperFirst()}
-      </div>
-      <div style={{ fontFamily: 'monospace', color: '#999', fontSize: 10 }}>
-        {job.id}
-      </div>
+      <div style={{ width: '100%', color: '#999' }}>{capitalize(ago)}</div>
+      <div style={{ fontFamily: 'monospace', color: '#999', fontSize: 10 }}>{job.id}</div>
       <Button
         small
         trans
         gray
         tooltip="Delete"
-        onClick={(e) => { e.stopPropagation(); onRemove(job.id) }}>
+        onClick={(e) => {
+          e.stopPropagation();
+          onRemove(job.id);
+        }}
+      >
         <FaTrash />
       </Button>
     </div>
   );
-}
+};
 
 export const JobList = ({ useJob, jobIds, limit, onOpen, onRemove }) => {
   if (!jobIds) return null;
 
-  const nodes = jobIds
-    .map(id => (
-      <JobRow
-        key={id}
-        id={id}
-        useJob={useJob}
-        onOpen={() => onOpen(id)}
-        onRemove={() => onRemove(id)}
-      />
-    ));
+  const nodes = jobIds.map((id) => (
+    <JobRow key={id} id={id} useJob={useJob} onOpen={() => onOpen(id)} onRemove={() => onRemove(id)} />
+  ));
 
-  return (
-    <div>
-      {nodes.slice(0, limit || nodes.length)}
-    </div>
-  );
-}
+  return <div>{nodes.slice(0, limit || nodes.length)}</div>;
+};

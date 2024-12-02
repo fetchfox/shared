@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Input } from './Input.js';
-import { Select } from './Select.js';
-import { Loading  } from '../common/Loading.js';
-import { Error  } from '../error/Error.js';
-import { useCheckApiKey, useModels } from '../../state/ai.js';
+import { Input } from './Input';
+import { Select } from './Select';
+import { Loading } from '../common/Loading';
+import { Error } from '../error/Error';
+import { useCheckApiKey, useModels } from '../../state/ai';
 
 export const ByokInput = ({ value, onChange }) => {
   const apiKey = value[value.provider] ? value[value.provider].apiKey : '';
@@ -22,7 +22,7 @@ export const ByokInput = ({ value, onChange }) => {
       if (c[0] == val) return c[1] + ' ';
     }
     return '';
-  }
+  };
 
   const p = value[value.provider];
 
@@ -34,40 +34,36 @@ export const ByokInput = ({ value, onChange }) => {
     };
     delta[value.provider][field] = val;
     onChange(delta);
-  }
+  };
 
   return (
-    <div
-      style={{ display: 'flex',
-               flexDirection: 'column',
-               gap: 10,
-               maxWidth: 300
-             }}
-      >
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 300 }}>
       <Select
-        style={{ width: '100%'}}
+        style={{ width: '100%' }}
         choices={choices}
         value={value.provider}
         onChange={(val) => onChange({ provider: val })}
       />
 
-      {value.provider && <Input
-        style={{ width: '100%'}}
-        value={apiKey}
-        onChange={(e) => change('apiKey', e.target.value)}
-        placeholder={`Enter your ${expand(value?.provider || '')}API key`}
-      />}
-      {value.provider && p?.apiKey && !loading && !ok &&(
-        <Error small message="API key not working" />
-       )}
+      {value.provider && (
+        <Input
+          style={{ width: '100%' }}
+          value={apiKey}
+          onChange={(e) => change('apiKey', e.target.value)}
+          placeholder={`Enter your ${expand(value?.provider || '')}API key`}
+        />
+      )}
+      {value.provider && p?.apiKey && !loading && !ok && <Error small message="API key not working" />}
 
-      {(value.provider && p?.apiKey) && <Select
-        style={{ width: '100%'}}
-        choices={(models || []).map(x => [x])}
-        value={model}
-        onChange={(val) => change('model', val)}
-      />}
+      {value.provider && p?.apiKey && (
+        <Select
+          style={{ width: '100%' }}
+          choices={(models || []).map((x) => [x])}
+          value={model}
+          onChange={(val) => change('model', val)}
+        />
+      )}
       {value.provider && p?.apiKey && loading && <Loading size={18} />}
     </div>
   );
-}
+};

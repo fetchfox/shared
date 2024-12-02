@@ -36,11 +36,6 @@ export function callApi(method, urlEndpoint, data) {
 }
 
 export const generateApiKey = async () => {
-  const resp = await fetch(
-    endpoint(`/api/key/generate`),
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-    });
+  const resp = await callApi('POST', '/api/key/generate');
   return await resp.json();
-}
+};

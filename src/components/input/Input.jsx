@@ -8,13 +8,14 @@ export const Input = forwardRef((props, ref) => {
       <input
         ref={ref}
         {...rest}
-        style={{ border: '1px solid #ccc',
-                 padding: '6px 10px',
-                 borderRadius: 6,
-                 boxShadow: '2px 2px #0001',
-                 fontSize: 14,
-                 ...style,
-               }}
+        style={{
+          border: '1px solid #ccc',
+          padding: '6px 10px',
+          borderRadius: 6,
+          boxShadow: '2px 2px #0001',
+          fontSize: 14,
+          ...style,
+        }}
       />
     </div>
   );
