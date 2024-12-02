@@ -24,4 +24,4 @@ export { useResponsiveCheck, useIfSmall } from './state/responsive';
 export { primaryColor } from './constants';
 export { generateApiKey, setApiHost, callApi } from './api';
 export { endpoint } from './utils';
-export { GlobalContext, GlobalContextProvider, useGlobalContext, useUserSync } from './contexts';
+export { GlobalContext, GlobalContextProvider, useGlobalContext } from './contexts';
