@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Input } from './Input';
-import { Select } from './Select';
+import { useModels } from '../../state/ai';
 import { Loading } from '../common/Loading';
 import { Error } from '../error/Error';
-import { useCheckApiKey, useModels } from '../../state/ai';
+import { Input } from './Input';
+import { Select } from './Select';
 
 export const ByokInput = ({ value, onChange }) => {
   const apiKey = value[value.provider] ? value[value.provider].apiKey : '';

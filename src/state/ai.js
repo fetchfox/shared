@@ -1,8 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
-
-export const useCheckApiKey = () => {
-  return true;
-};
+import { useEffect, useRef, useState } from 'react';
 
 export const useModels = (provider, apiKey) => {
   const [loading, setLoading] = useState();

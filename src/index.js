@@ -14,6 +14,8 @@ export { CsvButton } from './components/csv/CsvButton';
 export { StopButton } from './components/controls/StopButton';
 export { Table } from './components/table/Table';
 export { Modal } from './components/modal/Modal';
+export { PaymentsView } from './components/payments/PaymentsView';
+export { SharedProvider } from './components/SharedProvider';
 
 export { useStepLibrary } from './state/workflow';
 export { useJob } from './state/job';

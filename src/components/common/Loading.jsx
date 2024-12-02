@@ -1,8 +1,22 @@
 import React from 'react';
 
-export const Loading = ({ width, size, color, children }) => {
-  color = color || '#333';
-  width = size || width || 32;
+const sizeTable = {
+  sm: 24,
+  md: 32,
+  lg: 48,
+};
+
+function sizeToWidth(size) {
+  if (typeof size === 'number') {
+    return size;
+  }
+  return sizeTable[size] || sizeTable.md;
+}
+
+export const Loading = ({ width, size = 'md', color, grey, children }) => {
+  color = color || (grey ? '#aaa' : '#333');
+  width = width || sizeToWidth(size);
+
   return (
     <div style={{ display: 'inline-block' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: children ? width / 4 : 0 }}>
