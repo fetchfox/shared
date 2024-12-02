@@ -1,5 +1,3 @@
-import { apiHost } from '../constants';
-
 export const endpoint = (path) => {
   return `${currentApiHost.apiHost}${path}`;
 };
