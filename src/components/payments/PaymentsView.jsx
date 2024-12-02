@@ -7,11 +7,11 @@ import { useEffect, useState } from 'react';
 import { CardForm } from './CardForm';
 import { PaymentsLoading } from './PaymentsLoading';
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
-
-export function PaymentsView() {
+export function PaymentsView({ stripePublishableKey }) {
   const { apiKey } = useGlobalContext();
   const [currentCard, setCurrentCard] = useState(null);
+
+  const stripePromise = useMemo(() => loadStripe(stripePublishableKey), [stripePublishableKey]);
 
   useEffect(() => {
     if (!apiKey) return;
