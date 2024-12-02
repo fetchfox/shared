@@ -6,9 +6,16 @@ const sizeTable = {
   lg: 48,
 };
 
+function sizeToWidth(size) {
+  if (typeof size === 'number') {
+    return size;
+  }
+  return sizeTable[size] || sizeTable.md;
+}
+
 export const Loading = ({ width, size = 'md', color, grey, children }) => {
   color = color || (grey ? '#aaa' : '#333');
-  width = width || sizeTable[size] || sizeTable.md;
+  width = width || sizeToWidth(size);
 
   return (
     <div style={{ display: 'inline-block' }}>
