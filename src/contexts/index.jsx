@@ -1,27 +1,34 @@
-import { useContext, createContext, useCallback, useState, useEffect } from 'react';
-import { callApi, currentApiKey, endpoint } from '../api';
 import { usePrevious } from '@uidotdev/usehooks';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { currentApiKey, endpoint } from '../api';
 
 // special fields:
 //  - apiKey: if set, passed in header of api calls
 export const GlobalContext = createContext(null);
 
 export function GlobalContextProvider({ children }) {
-  const [value, setValue] = useState({});
-  const update = useCallback((data) => setValue((old) => ({ ...old, ...data })), []);
+  const [value, _setValue] = useState({});
+
+  const setValue = useCallback((setter) => {
+    if (typeof setter === 'function') {
+      _setValue((old) => {
+        const newValue = setter(old);
+        currentApiKey.apiKey = newValue.apiKey;
+        return newValue;
+      });
+    } else {
+      currentApiKey.apiKey = setter.apiKey;
+      _setValue(setter);
+    }
+  }, []);
+
+  const update = useCallback((data) => setValue((old) => ({ ...old, ...data })), [setValue]);
 
   const fullValue = {
     ...value,
     update,
     set: setValue,
   };
-
-  // keep currentApiKey (global var) in sync with apiKey in global context
-  // honestly, maybe we just don't put the api key in the context?
-  useEffect(() => {
-    currentApiKey.apiKey = value.apiKey;
-    console.log('got api key', currentApiKey.apiKey);
-  }, [value.apiKey]);
 
   return <GlobalContext.Provider value={fullValue}>{children}</GlobalContext.Provider>;
 }
