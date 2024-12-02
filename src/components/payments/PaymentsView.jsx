@@ -20,10 +20,8 @@ export function PaymentsView() {
       if (currentCard) {
         if (currentCard.exists) return;
 
-        console.log('calling create-intent');
         const resp = await callApi('POST', '/api/v2/payments/intent');
         const data = await resp.json();
-        console.log('client secret', data);
         setClientSecret(data.clientSecret);
       } else {
         const resp = await callApi('GET', '/api/v2/payments/card');
