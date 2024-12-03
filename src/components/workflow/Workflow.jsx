@@ -182,6 +182,14 @@ const GenericStep = ({ step, prettyName, editable, onEdit, onRemove }) => {
 
     console.log('render generic step', key, argDesc, step);
 
+    if (!argDesc) {
+      return (
+        <div>
+          {key}={JSON.stringify(arg)}
+        </div>
+      );
+    }
+
     switch (argDesc.format) {
       case 'list':
       case 'array':
