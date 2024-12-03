@@ -18,19 +18,20 @@ const Result = ({ url, rating, html }) => {
     ],
     [
       40,
-      'FetchFox may be able to get ',
+      'FetchFox may be able to access ',
       <div style={{ color: '#F1C40F' }}>
         <IoWarning size={16} />
       </div>,
     ],
     [
       70,
-      'FetchFox able to get ',
+      'FetchFox able to access ',
       <div style={{ color: '#27AE60' }}>
         <FaCheckCircle size={16} />
       </div>,
     ],
   ];
+
   let desc;
   let icon;
   for (const [min, d, i] of ranges) {
@@ -42,7 +43,7 @@ const Result = ({ url, rating, html }) => {
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 5, width: '100%' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}>
         <div style={{ whiteSpace: 'nowrap',
                       overflow: 'hidden',
                       display: 'flex',
