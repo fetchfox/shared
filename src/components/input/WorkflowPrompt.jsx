@@ -83,7 +83,7 @@ export const WorkflowPrompt = ({
   autoStart,
   overrideControls,
 }) => {
-  const { fox } = useGlobalContext();
+  const { fox, isExtension } = useGlobalContext();
   const [loading, setLoading] = useState({});
   const [disabled, setDisabled] = useState();
   const [editing, setEditing] = useState();
@@ -333,9 +333,9 @@ export const WorkflowPrompt = ({
       {!onlyPreview && editCode && codeNode}
       {!onlyPreview && !editCode && formNode}
 
-      <div style={{ margin: '10px 0', fontSize: 12 }}>
+      {!isExtension && <div style={{ margin: '10px 0', fontSize: 12 }}>
         <FetchCheck url={values.urls ? values.urls.split('\n')[0].trim() : undefined } />
-      </div>
+      </div>}
 
       <div style={{ marginTop: 20 }}>
         {loading.preview && (
