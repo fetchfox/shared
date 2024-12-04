@@ -17,13 +17,13 @@ export const ListInput = (props) => {
   };
 
   const add = () => {
-    const copy = [...props.value];
+    const copy = [...(props.value || [])];
     copy.push('');
     props.onChange(copy);
   };
 
   let i = 0;
-  const nodes = props.value.map((v) => {
+  const nodes = (props.value || []).map((v) => {
     const index = i++;
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>

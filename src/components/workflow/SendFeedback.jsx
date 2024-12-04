@@ -28,33 +28,27 @@ const ratingOptions = [
 export function SendFeedback({ meta }) {
   const [rating, setRating] = useState(null); // 'up' | 'down' | null
   const [feedback, setFeedback] = useState('');
-
   const [sent, setSent] = useState(false);
+  const [thankYou, setThankYou] = useState(false);
 
   const onSubmit = async () => {
-    setSent(true);
+    setThankYou(true);
+    setTimeout(() => setSent(true), 1500);
     await callApi('POST', '/api/v2/feedback', { rating, feedback, meta });
   };
 
-  // once we've submitted, hide the feedback form
-  if (sent) return null;
-
-  return (
-    <div
-      style={{
-        padding: 10,
-        background: '#fef9c350',
-        border: '1px solid #ccc',
-        boxShadow: '2px 2px #eee',
-        borderRadius: 4,
-      }}
-    >
+  const ratingNode = (
+    <div style={{
+             display: 'flex',
+             flexDirection: 'row',
+             alignItems: 'center',
+             justifyContent: 'space-between',
+                }}>
       <div
         style={{
           fontSize: 14,
           fontWeight: 'bold',
-          textAlign: 'center',
-          marginBottom: 8,
+          width: '100%',
         }}
       >
         How were these results?
@@ -62,7 +56,6 @@ export function SendFeedback({ meta }) {
       <div
         style={{
           display: 'flex',
-          width: '100%',
           justifyContent: 'center',
           gap: 4,
         }}
@@ -71,8 +64,8 @@ export function SendFeedback({ meta }) {
           <div
             style={{
               borderRadius: '9999px',
-              width: 36,
-              height: 36,
+              width: 24,
+              height: 24,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -88,7 +81,23 @@ export function SendFeedback({ meta }) {
           </div>
         ))}
       </div>
-      {rating && (
+    </div>
+  );
+
+  if (sent) return null;
+
+  return (
+    <div
+      style={{
+        padding: 10,
+             border: '1px solid #ddd',
+             background: 'rgba(255,255,255,0.6)',
+        borderRadius: 4,
+      }}
+      >
+      {thankYou && <div>Thanks for the feedback</div>}
+      {!thankYou && !rating && ratingNode}
+      {!thankYou && rating && (
         <div>
           <Textarea
             tabIndex="2"
@@ -108,7 +117,7 @@ export function SendFeedback({ meta }) {
             onChange={(e) => setFeedback(e.target.value)}
             placeholder="Any additional feedback?"
           />
-          <Button small style={{ width: '100%' }} onClick={onSubmit}>
+          <Button style={{ width: '100%' }} onClick={onSubmit}>
             Submit
           </Button>
         </div>

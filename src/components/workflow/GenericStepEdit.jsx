@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { IoMdArrowDropdown, IoMdArrowDropright } from 'react-icons/io';
 import { useGlobalContext } from '../../contexts';
-import { camelToHuman, capitalize } from '../../utils';
+import { capitalize } from '../../utils';
 import { Error } from '../error/Error';
 import { DictInput } from '../input/DictInput';
 import { Input } from '../input/Input';
@@ -161,19 +161,20 @@ const GenericStepEditInner = ({
 
     return (
       <tr>
-        <th style={{ width: 120, whiteSpace: 'nowrap', fontSize: 14 }}>{camelToHuman(capitalize(key))}</th>
+        <th style={{ width: 120, whiteSpace: 'nowrap', fontSize: 12, border: '1px solid #ccc' }}>{key}</th>
         <td
           style={{
-            width: '100%',
-            border: '1px solid #ccc',
+                 width: '100%',
+                 border: '1px solid #ccc',
           }}
-        >
-          {inputNode}
-          {/*JSON.stringify(desc.args[key])*/}
-          <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            {desc?.args && desc.args[key] && desc.args[key].description}
+          >
+          <div style={{ padding: 4 }}>
+            {inputNode}
+            <div style={{ fontSize: 12, padding: '4px 0', color: '#999' }}>
+              {desc?.args && desc.args[key] && desc.args[key].description}
+            </div>
+            <Error small message={errors && errors[key]} />
           </div>
-          <Error small message={errors && errors[key]} />
         </td>
       </tr>
     );
@@ -196,7 +197,7 @@ const GenericStepEditInner = ({
       <StepHeader prettyName={prettyName} loading={loading} onDone={onDone} onSave={onSave} />
 
       <div>
-        <table style={{ tableLayout: 'fixed' }}>
+        <table style={{ tableLayout: 'fixed', borderCollapse: 'collapse' }}>
           <tbody>{basicRows}</tbody>
         </table>
       </div>

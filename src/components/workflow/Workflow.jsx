@@ -180,7 +180,7 @@ const GenericStep = ({ step, prettyName, editable, onEdit, onRemove }) => {
 
     if (!arg) return null;
 
-    console.log('render generic step', key, argDesc, step);
+    console.log('render generic step', key, argDesc, step, library);
 
     if (!argDesc) {
       return (
@@ -205,7 +205,7 @@ const GenericStep = ({ step, prettyName, editable, onEdit, onRemove }) => {
         return (
           <Table
             cellStyles={[{ width: '10%' }]}
-            rows={Object.keys(arg).map((k) => [<b>{camelToHuman(k)}</b>, '' + arg[k]])}
+            rows={Object.keys(arg).map((k) => [<b>{k}</b>, '' + arg[k]])}
           />
         );
 

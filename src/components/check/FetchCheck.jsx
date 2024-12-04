@@ -18,7 +18,7 @@ const Result = ({ url, rating, html }) => {
     ],
     [
       40,
-      'FetchFox may be able to access ',
+      'FetchFox may be have issues accessing ',
       <div style={{ color: '#F1C40F' }}>
         <IoWarning size={16} />
       </div>,
