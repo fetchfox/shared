@@ -1,5 +1,6 @@
 export const endpoint = (path) => {
-  return `${currentApiHost.apiHost}${path}`;
+  const host = currentApiHost?.apiHost || 'https://fetchfox.ai';
+  return `${host}${path}`;
 };
 
 export const setApiHost = (host) => {
