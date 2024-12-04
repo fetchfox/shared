@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { StepHeader } from './StepHeader';
-import { GenericStepEdit } from './GenericStepEdit';
+import { GenericStepEdit } from './GenericStep';
 import { Textarea } from '../input/Textarea';
 import { Select } from '../input/Select';
 import { DictInput } from '../input/DictInput';

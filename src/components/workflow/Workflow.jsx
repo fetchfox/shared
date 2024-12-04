@@ -18,7 +18,7 @@ import { primaryColor } from '../../constants';
 import { camelToHuman } from '../../utils';
 import { endpoint } from '../../api';
 
-import { GenericStepEdit } from './GenericStepEdit';
+import { GenericStep, GenericStepEdit } from './GenericStep';
 import { ConstStep, ConstStepEdit } from './ConstStep';
 import { ExtractStep, ExtractStepEdit } from './ExtractStep';
 
@@ -105,84 +105,6 @@ const NewStep = ({ onChange, onCancel }) => {
       <pre>{JSON.stringify(library, null, 2)}</pre>
       */}
     </animated.div>
-  );
-};
-
-const GenericStep = ({ step, prettyName, editable, onEdit, onRemove }) => {
-  const { library } = useGlobalContext();
-  const desc = library ? library[step?.name] : {};
-  const keys = Object.keys(step?.args);
-
-  if (!desc?.args) return null;
-
-  const render = (key) => {
-    if (!desc) return null;
-
-    const argDesc = desc.args[key];
-    const arg = step.args[key];
-
-    if (!arg) return null;
-
-    console.log('render generic step', key, argDesc, step, library);
-
-    if (!argDesc) {
-      return (
-        <div>
-          {key}={JSON.stringify(arg)}
-        </div>
-      );
-    }
-
-    switch (argDesc.format) {
-      case 'list':
-      case 'array':
-        return (
-          <ul>
-            {arg.map((x) => (
-              <li>{x}</li>
-            ))}
-          </ul>
-        );
-
-      case 'object':
-        return (
-          <Table
-            cellStyles={[{ width: '10%' }]}
-            rows={Object.keys(arg).map((k) => [<b>{k}</b>, '' + arg[k]])}
-          />
-        );
-
-      case 'boolean':
-        return arg ? 'yes' : 'no';
-
-      case 'number':
-      case 'string':
-      case 'choices':
-        return arg;
-
-      default:
-        return (
-          <div>
-            {argDesc.format} {JSON.stringify(arg)}
-          </div>
-        );
-    }
-  };
-
-  const rows = keys.map((key) => {
-    const display = render(key);
-    if (!display) return null;
-    return [<b style={{ whiteSpace: 'nowrap', width: 100, display: 'inline-block' }}>{camelToHuman(key)}</b>, display];
-  });
-
-  return (
-    <div>
-      <StepHeader prettyName={prettyName} onEdit={editable && onEdit} onRemove={editable && onRemove} />
-
-      <div style={{ background: '#fff' }}>
-        <Table style={{ width: '100%' }} cellStyles={[{ width: '10%' }]} rows={rows} />
-      </div>
-    </div>
   );
 };
 
