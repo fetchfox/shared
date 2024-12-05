@@ -14,17 +14,18 @@ import { Modal } from '../modal/Modal';
 import { Table } from '../table/Table';
 import { TableFromItems } from '../table/TableFromItems';
 
-import { primaryColor } from '../../constants';
-import { camelToHuman } from '../../utils';
-import { endpoint } from '../../api';
-
 import { GenericStep, GenericStepEdit } from './GenericStep';
 import { ConstStep, ConstStepEdit } from './ConstStep';
 import { ExtractStep, ExtractStepEdit } from './ExtractStep';
 
+import { AsCode } from './AsCode';
 import { GlobalOptions } from './GlobalOptions';
 import { Result } from './Results';
 import { StepHeader } from './StepHeader';
+
+import { primaryColor } from '../../constants';
+import { camelToHuman } from '../../utils';
+import { endpoint } from '../../api';
 
 export const fieldsMeta = {
   crawl: {
@@ -465,11 +466,7 @@ export const Workflow = ({ workflow, results, editable, onChange, onEditing }) =
               </a>
             </p>
             <br />
-            <textarea
-              rows={16}
-              style={{ width: '100%', fontSize: 12, border: '1px solid #ccc' }}
-              value={JSON.stringify({ steps: workflow?.steps, options: workflow?.options }, null, 2)}
-            />
+            <AsCode workflow={workflow} />
           </div>
         </Modal>
       </div>
