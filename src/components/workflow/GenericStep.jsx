@@ -5,10 +5,12 @@ import { capitalize } from '../../utils';
 import { Error } from '../error/Error';
 import { DictInput } from '../input/DictInput';
 import { Input } from '../input/Input';
+import { Table } from '../table/Table';
 import { ListInput } from '../input/ListInput';
 import { Select } from '../input/Select';
 import { StepHeader } from './StepHeader';
 import { fieldsMeta } from './Workflow';
+import { camelToHuman } from '../../utils';
 
 export const GenericStep = ({ step, prettyName, editable, onEdit, onRemove }) => {
   const { library } = useGlobalContext();
