@@ -56,7 +56,7 @@ const FullResult = ({ result }) => {
       </div>
       <TableFromItems
         noOverflow
-        showPrivate={showPrivate}
+        showPrivate={true || showPrivate}
         style={{ background: '#fff' }}
         allCellStyle={{ maxWidth: 600, padding: '2px 4px' }}
         items={result.items}
@@ -67,7 +67,11 @@ const FullResult = ({ result }) => {
 
 const ItemsResult = ({ items }) => (
   <div>
-    <TableFromItems style={{ background: '#fff' }} items={items} overflow={6} clipMiddle />
+    <TableFromItems
+      style={{ background: '#fff' }}
+      items={items}
+      overflow={6}
+      clipMiddle />
   </div>
 );
 
@@ -82,7 +86,7 @@ const CrawlResult = ({ items }) => (
     <TableFromItems
       noHeader
       style={{ background: '#fff' }}
-      items={items.map((i) => ({ url: i.url }))}
+      items={items.map((i) => ({ url: i.url || i._url }))}
       overflow={6}
       clipMiddle
     />
@@ -245,6 +249,11 @@ export const Result = ({ index, result, last, inner }) => {
           <FaArrowAltCircleDown size={24} />
         </div>
       )}
+
+      {/*
+      RESULT JSON:
+      <pre>{JSON.stringify(result, null, 2)}</pre>
+      */}
     </div>
   );
 };
@@ -292,10 +301,9 @@ export const Results = ({ jobId }) => {
       {results?.full && <Inner results={results.full} />}
 
       {/*
-      JOBID:{JSON.stringify(jobId)} <br />
       RESULTS:
       <pre>{JSON.stringify(results, null, 2)}</pre>
-      --
+      JOBID:{JSON.stringify(jobId)} <br />
       */}
     </div>
   );

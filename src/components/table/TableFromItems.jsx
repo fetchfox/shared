@@ -82,14 +82,12 @@ export const TableFromItems = ({
   }
 
   headers = headers.filter((h) => showPrivate || !h.startsWith('_'));
-
   const display = (val) => {
     if (typeof val == 'string') return val;
     return JSON.stringify(val);
   };
 
   const enter = (index) => {
-    console.log('enter', index);
     setHoverIndex(index);
   };
 
@@ -173,6 +171,10 @@ export const TableFromItems = ({
       {overflowNode}
 
       {hover && hoverIndex !== undefined && <Hover item={hoverIndex} onClose={() => setHoverIndex(null)} />}
+
+      {/*
+      <pre>{JSON.stringify(items, null, 2)}</pre>
+      */}
     </div>
   );
 };
