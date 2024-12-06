@@ -77,7 +77,11 @@ const ItemsResult = ({ items }) => (
 
 const ConstResult = ({ items }) => (
   <div>
-    <TableFromItems noHeader style={{ background: '#fff' }} items={items} />
+    <TableFromItems
+      noHeader
+      style={{ background: '#fff' }}
+      items={items.map((i) => ({ url: i.url || i._url }))}
+    />
   </div>
 );
 
