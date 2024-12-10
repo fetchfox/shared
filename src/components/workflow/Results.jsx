@@ -100,6 +100,14 @@ const CrawlResult = ({ items }) => (
 
 const ResultHeader = ({ index, result }) => {
   const title = `Results for ${prettyName(result.step.name)}`;
+
+  const count = (result.items || [])
+    .filter(item => (
+      !item._meta ||
+      item._meta?.status == 'done'
+    ))
+    .length;
+
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 5, height: 24, width: '100%' }}>
       <div style={{ marginTop: 5 }}>
@@ -119,7 +127,7 @@ const ResultHeader = ({ index, result }) => {
         {result.done && result.error && <MdError size={16} color="red" />}
       </div>
       <div style={{ width: '100%' }}>
-        {title} ({result.items?.length})
+        {title} ({count})
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
         <CsvButton items={result.items}>
