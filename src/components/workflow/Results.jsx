@@ -17,7 +17,7 @@ const prettyName = (name) => {
   const predefinedLabels = {
     const: 'Starting URLs',
     crawl: 'Find more URLs',
-    extract: 'Extract data',
+    extract: 'Extract data 2',
   };
   return predefinedLabels[name] || capitalize(name);
 };
