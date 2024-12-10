@@ -56,7 +56,7 @@ const FullResult = ({ result }) => {
       </div>
       <TableFromItems
         noOverflow
-        showPrivate={true || showPrivate}
+        showPrivate={showPrivate}
         style={{ background: '#fff' }}
         allCellStyle={{ maxWidth: 600, padding: '2px 4px' }}
         items={result.items}
@@ -93,6 +93,7 @@ const CrawlResult = ({ items }) => (
       items={items.map((i) => ({ url: i.url || i._url }))}
       overflow={6}
       clipMiddle
+      showPrivate
     />
   </div>
 );

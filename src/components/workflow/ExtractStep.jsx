@@ -7,7 +7,7 @@ import { DictInput } from '../input/DictInput';
 import { Table } from '../table/Table';
 import { Error } from '../error/Error';
 
-export const ExtractStep = ({ step, onEdit, editable, prettyName }) => {
+export const ExtractStep = ({ step, onEdit, editable, prettyName, onRemove }) => {
   // const nodes = step.args.items.map((item) => <div key={item.url}>{item.url}</div>);
 
   const questions = (step.args?.questions || {});
@@ -29,7 +29,7 @@ export const ExtractStep = ({ step, onEdit, editable, prettyName }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-      <StepHeader onEdit={editable && onEdit} prettyName="Extract data" />
+      <StepHeader prettyName="Extract data" onEdit={editable && onEdit} onRemove={onRemove} />
       <Table
         cellStyles={[{ width: '10%' }]}
         rows={Object.keys(questions).map((k) => [<b>{k}</b>, '' + questions[k]])}
@@ -64,6 +64,13 @@ const ExtractStepEditInner = ({
 }) => {
   const stepArgs = step?.args || {};
 
+  const handleSingle = (val) => {
+    onChange('single', val);
+    if (val) {
+      onChange('maxPages', 1);
+    }
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
       <StepHeader prettyName={prettyName} loading={loading} onDone={onDone} onSave={onSave} />
@@ -81,9 +88,9 @@ const ExtractStepEditInner = ({
                  [false, 'Multiple per page'],
                  ]}
         value={stepArgs.single}
-        onChange={(val) => onChange('single', val)}
+        onChange={handleSingle}
       />
-      <Select
+      {!stepArgs.single && <Select
         label="Max pagination"
         key={key}
         style={{ width: '100%' }}
@@ -101,7 +108,7 @@ const ExtractStepEditInner = ({
                  ]}
         value={stepArgs.maxPages}
         onChange={(val) => onChange('maxPages', val)}
-      />
+      />}
     </div>
   )
 };

@@ -81,7 +81,15 @@ export const TableFromItems = ({
     }
   }
 
-  headers = headers.filter((h) => showPrivate || !h.startsWith('_'));
+  headers = headers
+    .filter((h) => showPrivate || !h.startsWith('_'))
+    .filter((h) => h != '_meta')
+    .sort((a, b) => {
+      if (a.startsWith('_') && b.startsWith('_')) return 0;
+      if (a.startsWith('_')) return 1;
+      if (b.startsWith('_')) return -1;
+      return 0;
+    });
   const display = (val) => {
     if (typeof val == 'string') return val;
     return JSON.stringify(val);
@@ -95,17 +103,45 @@ export const TableFromItems = ({
 
   let id = 1;
   let index = 0;
-  let rows = (reverse ? items.reverse() : items).map((item) => {
-    const myIndex = index++;
-    const style = {
-      whiteSpace: 'nowrap',
-    };
-    return headers.map((h) => (
-      <div onMouseOver={() => enter(item)} style={style}>
-        {display(item[h])}
-      </div>
-    ));
-  });
+  let loadingCount = 0;
+  let rows = items
+    .filter((item) => {
+      if (item._meta?.status == 'loading') {
+        loadingCount++;
+        return false;
+      } else {
+        return true;
+      }
+    })
+    .map((item) => {
+      const myIndex = index++;
+      const style = {
+        whiteSpace: 'nowrap',
+      };
+
+      return headers.map((h) => (
+        <div onMouseOver={() => enter(item)} style={style}>
+          {display(item[h])}
+        </div>
+      ));
+    });
+
+  if (loadingCount) {
+    if (showPrivate) {
+      const loadingRows = items
+        .filter((item) => item._meta?.status == 'loading')
+        .map((item) => {
+          return [
+            <div style={{ ...style, color: '#aaa' }}>Processing {item._meta.sourceUrl}...</div>
+          ];
+        });
+      rows.push(...loadingRows);
+    } else {
+      rows.push([
+        <div style={{ ...style, color: '#aaa' }}>Processing {loadingCount}...</div>
+      ]);
+    }
+  }
 
   if (!noHeader) {
     rows.unshift(headers.map((h) => <b>{h}</b>));
