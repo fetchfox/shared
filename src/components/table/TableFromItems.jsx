@@ -14,7 +14,7 @@ const Hover = ({ item, onClose }) => {
         border: '1px solid #ccc',
         marginTop: 5,
         padding: 5,
-        bottom: 64, // TODO: don't hardcode hack this
+        bottom: 64, // TODO: don't hardcode this
         left: 0,
         zIndex: 200,
         width: '100%',
@@ -46,6 +46,7 @@ export const TableFromItems = ({
   style,
   allCellStyle,
   showPrivate,
+  showLoading,
 }) => {
   const [mode, setMode] = useState('compact');
   if (!overflow) overflow = items.length + 10;
@@ -119,6 +120,12 @@ export const TableFromItems = ({
         whiteSpace: 'nowrap',
       };
 
+      if (item._meta?.status == 'error') {
+        return [
+          <div style={style}>Error: {item._meta.error}</div>
+        ];
+      }
+
       return headers.map((h) => (
         <div onMouseOver={() => enter(item)} style={style}>
           {display(item[h])}
@@ -126,7 +133,7 @@ export const TableFromItems = ({
       ));
     });
 
-  if (loadingCount) {
+  if (showLoading && loadingCount) {
     if (showPrivate) {
       const loadingRows = items
         .filter((item) => item._meta?.status == 'loading')

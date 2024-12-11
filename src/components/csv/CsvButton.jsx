@@ -10,7 +10,27 @@ import { primaryColor } from '../../constants';
 const downloadCSV = (items) => {
   const filename = 'fetchfox';
   const csvConfig = mkConfig({ useKeysAsHeaders: true, filename });
-  const csv = generateCsv(csvConfig)(items);
+
+  const allStrings = [];
+  for (const item of items) {
+    const copy = {};
+    for (const key of Object.keys(item)) {
+      let val = item[key];
+
+      const skip = (
+        item._meta?.status == 'loading' ||
+        item._meta?.status == 'error');
+      if (skip) continue;
+
+      if (typeof val != 'string') {
+        val = JSON.stringify(val);
+      }
+      copy[key] = val;
+    }
+    allStrings.push(copy);
+  }
+
+  const csv = generateCsv(csvConfig)(allStrings);
   download(csvConfig)(csv);
 };
 

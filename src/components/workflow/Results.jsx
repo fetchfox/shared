@@ -57,6 +57,7 @@ const FullResult = ({ result }) => {
       <TableFromItems
         noOverflow
         showPrivate={showPrivate}
+        showLoading={!result.done}
         style={{ background: '#fff' }}
         allCellStyle={{ maxWidth: 600, padding: '2px 4px' }}
         items={result.items}
@@ -65,27 +66,30 @@ const FullResult = ({ result }) => {
   );
 };
 
-const ItemsResult = ({ items }) => (
+const ItemsResult = ({ result, items }) => (
   <div>
     <TableFromItems
       style={{ background: '#fff' }}
       items={items}
       overflow={6}
-      clipMiddle />
+      clipMiddle
+      showLoading={!result.done}
+    />
   </div>
 );
 
-const ConstResult = ({ items }) => (
+const ConstResult = ({ result, items }) => (
   <div>
     <TableFromItems
       noHeader
       style={{ background: '#fff' }}
       items={items.map((i) => ({ url: i.url || i._url }))}
+      showLoading={!result.done}
     />
   </div>
 );
 
-const CrawlResult = ({ items }) => (
+const CrawlResult = ({ result, items }) => (
   <div>
     <TableFromItems
       noHeader
@@ -94,6 +98,7 @@ const CrawlResult = ({ items }) => (
       overflow={6}
       clipMiddle
       showPrivate
+      showLoading={!result.done}
     />
   </div>
 );
@@ -161,12 +166,12 @@ export const Result = ({ index, result, last, inner }) => {
   const prettyName = false && inner ? null : <ResultHeader index={index} result={result} />;
 
   let node = {
-    const: <ConstResult items={items} />,
-    crawl: <CrawlResult items={items} />,
+    const: <ConstResult result={result} items={items} />,
+    crawl: <CrawlResult result={result} items={items} />,
   }[step.name];
 
   if (!node) {
-    node = <ItemsResult items={items} />;
+    node = <ItemsResult result={result} items={items} />;
   }
 
   let errorNode;
